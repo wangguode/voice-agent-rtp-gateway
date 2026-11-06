@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wg-voice-gateway"
+version = "0.2.0"
+description = "生产级中文实时语音智能体网关（FreeSWITCH RTP/WebSocket + Pipecat 全双工流式管道 + 毫秒级打断 Barge-in）"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "王果 (wangguode)", email = "wangguode@users.noreply.github.com" }
+]
+dependencies = [
+    "pipecat-ai[webrtc,silero,openai,runner]>=1.15.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "python-dotenv>=1.0.1",
+    "loguru>=0.7.2",
+    "numpy>=1.26.0",
+    "websockets>=13.0",
+]
+
+[project.optional-dependencies]
+cn-local = [
+    "pipecat-ai[funasr,kokoro]>=1.15.0",
+]
+
+[project.scripts]
+wg-voice = "wg_voice_gateway.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wg_voice_gateway"]

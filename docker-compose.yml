@@ -1,0 +1,12 @@
+services:
+  wg-voice-gateway:
+    build: .
+    container_name: wg-voice-gateway
+    ports:
+      - "8765:8765"
+    env_file:
+      - .env.example
+    environment:
+      - RUN_MODE=mock
+      - GATEWAY_PORT=8765
+    restart: unless-stopped
