@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WG Voice Gateway Console · 实时语音与 60ms 毫秒级打断监控大屏</title>
+  <link rel="stylesheet" href="/voice.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-group">
+      <span class="eyebrow">COM.WANGGUOAI.VOICE.GATEWAY</span>
+      <h1 class="brand-title">WG Voice Gateway Console</h1>
+      <span class="chip"><span class="dot"></span><span id="mode-label">连接网关中...</span></span>
+      <span class="chip" id="codec-label">8kHz G.711 ⇄ 16kHz PCM</span>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button type="button" class="btn" id="btn-theme">暗色模式</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="kpi-band" aria-label="语音交互死亡三角核心遥测">
+      <div class="kpi-card focal">
+        <div class="kpi-label">边缘 VAD 打断确认耗时</div>
+        <div class="kpi-value" id="kpi-barge-ms">60 ms</div>
+        <div class="kpi-sub">连续 3 帧 (20ms/帧) RMS ≥ 1200 立即触发</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">下行 TTS 首包延迟 (TTFB)</div>
+        <div class="kpi-value" id="kpi-ttfb">76.4 ms</div>
+        <div class="kpi-sub">DeepSeek Thinking=Disabled + 流式分片</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">clearAudio 队列清空信令</div>
+        <div class="kpi-value" id="kpi-clear-ms">0.16 ms</div>
+        <div class="kpi-sub">原子重置环形读写指针 (零残留自言自语)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">最近打断丢弃积压 RTP 帧</div>
+        <div class="kpi-value" id="kpi-dropped">12 帧</div>
+        <div class="kpi-sub">约合 240ms 未播报陈旧语音</div>
+      </div>
+    </section>
+
+    <div class="workbench-grid">
+      <!-- 左侧：实时全双工通话流与下行环形缓冲监控 -->
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">FreeSWITCH 全双工实时话路与毫秒级打断演练</h2>
+          <span class="state-pill" id="call-state">IDLE_LISTENING</span>
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="btn btn-primary" id="btn-start-call">启动全双工来电与自动打断演练</button>
+          <button type="button" class="btn btn-danger" id="btn-manual-barge">立即插话打断 (Trigger Barge-in)</button>
+          <button type="button" class="btn" id="btn-mic-toggle">开启浏览器麦克风 VAD 实测</button>
+        </div>
+
+        <div class="meter-section">
+          <div class="meter-header">
+            <span>下行 FreeSWITCH 8kHz RTP 发送环形缓冲队列 (16 槽位可视化)</span>
+            <span id="queue-depth-text">积压: 0 帧 | 上行 RMS: 60</span>
+          </div>
+          <div class="ring-slots" id="ring-slots"></div>
+        </div>
+
+        <div class="dialogue-stream" id="dialogue-list" aria-live="polite"></div>
+      </section>
+
+      <!-- 右侧：真实本地 UDP Socket RFC 3550 RTP 回路压测器 -->
+      <section class="card">
+        <div class="card-head">
+          <h2 class="card-title">RFC 3550 UDP Socket 真实回路压测 (Java RtpWebSocketBridge)</h2>
+          <button type="button" class="btn" id="btn-udp-bench">运行 UDP 回路压测</button>
+        </div>
+        <pre class="mono-log" id="udp-output">正在加载 UDP RTP 压测结果...</pre>
+      </section>
+    </div>
+  </main>
+
+  <script src="/voice.js"></script>
+</body>
+</html>

@@ -3,6 +3,9 @@ __pycache__/
 .venv/
 out/
 target/
+**/target/
+*.jar
+*.jar.original
 .env
 .DS_Store
 *.egg-info/

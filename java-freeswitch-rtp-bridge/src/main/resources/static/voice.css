@@ -1,0 +1,333 @@
+:root {
+  --bg-paper: #f5f5f5;
+  --bg-surface: #ffffff;
+  --bg-subtle: #ebebeb;
+  --text-ink: #1f2430;
+  --text-muted: #525e75;
+  --text-soft: #6c7890;
+  --border-hairline: rgba(31, 36, 48, 0.13);
+  --border-strong: rgba(31, 36, 48, 0.26);
+  --accent-primary: #bf4520;
+  --accent-hover: #a63a19;
+  --accent-tint: rgba(191, 69, 32, 0.08);
+  --link-blue: #2e5aa8;
+  --link-tint: rgba(46, 90, 168, 0.08);
+  --ok-fg: #18794e;
+  --ok-bg: rgba(24, 121, 78, 0.09);
+  --err-fg: #c62a2f;
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "Geist Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --bg-paper: #151821;
+  --bg-surface: #1e2230;
+  --bg-subtle: #272c3d;
+  --text-ink: #f2f4f8;
+  --text-muted: #b6bfd1;
+  --text-soft: #8a94a8;
+  --border-hairline: rgba(242, 244, 248, 0.12);
+  --border-strong: rgba(242, 244, 248, 0.24);
+  --accent-primary: #f08a59;
+  --accent-hover: #f59d73;
+  --accent-tint: rgba(240, 138, 89, 0.12);
+  --link-blue: #78a5eb;
+  --link-tint: rgba(120, 165, 235, 0.12);
+  --ok-fg: #4cc38a;
+  --ok-bg: rgba(76, 195, 138, 0.12);
+  --err-fg: #ff6b6b;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-paper);
+  color: var(--text-ink);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-hairline);
+  padding: 14px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand-group {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--accent-primary);
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 4px;
+  background: var(--bg-subtle);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok-fg);
+}
+
+.container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* 顶部死亡三角关键指标带（不等宽比例避免机械网格感） */
+.kpi-band {
+  display: grid;
+  grid-template-columns: 1.25fr 1.1fr 1fr 0.95fr;
+  gap: 14px;
+}
+
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.kpi-card.focal {
+  border-color: var(--accent-primary);
+  background: var(--accent-tint);
+}
+
+.kpi-label {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.kpi-sub {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-soft);
+  margin-top: 4px;
+}
+
+.workbench-grid {
+  display: grid;
+  grid-template-columns: 1.32fr 0.98fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.card-title {
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+.state-pill {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.btn {
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.btn:hover {
+  background: var(--bg-subtle);
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .btn-primary {
+  color: #151821;
+}
+
+.btn-danger {
+  border-color: var(--err-fg);
+  color: var(--err-fg);
+}
+
+/* 环形缓冲区与上行 RMS 能量条可视化 */
+.meter-section {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-hairline);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.meter-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.ring-slots {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 4px;
+  height: 22px;
+}
+
+.ring-slot {
+  border-radius: 3px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-hairline);
+  transition: background 120ms ease;
+}
+
+.ring-slot.filled {
+  background: var(--link-blue);
+  border-color: var(--link-blue);
+}
+
+.ring-slot.flushed {
+  background: var(--accent-primary);
+}
+
+.dialogue-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 240px;
+}
+
+.turn-box {
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-hairline);
+  border-left: 3px solid var(--link-blue);
+  background: var(--bg-paper);
+}
+
+.turn-box.bot {
+  border-left-color: var(--ok-fg);
+}
+
+.turn-box.barge {
+  border-left-color: var(--accent-primary);
+  background: var(--accent-tint);
+}
+
+.turn-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-soft);
+  margin-bottom: 4px;
+}
+
+.turn-text {
+  font-size: 14px;
+  color: var(--text-ink);
+}
+
+.mono-log {
+  background: var(--bg-paper);
+  border: 1px solid var(--border-hairline);
+  border-radius: 6px;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+@media (max-width: 960px) {
+  .kpi-band, .workbench-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .container {
+    padding: 14px;
+  }
+  .topbar {
+    padding: 12px 14px;
+  }
+}

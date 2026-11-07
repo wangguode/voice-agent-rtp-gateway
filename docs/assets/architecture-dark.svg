@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1040 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="voice-arch-dark-title voice-arch-dark-desc" id="voice-arch-dark-root">
+        <title id="voice-arch-dark-title">企业级实时语音智能体网关架构图</title>
+        <desc id="voice-arch-dark-desc">展示 FreeSWITCH 8kHz RTP 与 Java Spring Boot / Pipecat 全双工网关、60ms 毫秒级打断及中文流式语音模型的协同架构。</desc>
+        <defs>
+      <style>#voice-arch-dark-root { font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; color: #f5f5f5; }
+      #voice-arch-dark-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#voice-arch-dark-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="voice-arch-dark-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bfc0c0"/></marker>
+          <marker id="voice-arch-dark-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f08a59"/></marker>
+          <marker id="voice-arch-dark-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#739fdf"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#2d3142"/>
+        
+        <text x="32" y="28" fill="#949eb2" font-size="8.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" letter-spacing="0.16em">VOICE-AGENT-RTP-GATEWAY · ARCHITECTURE</text>
+        <text x="32" y="52" fill="#f5f5f5" font-size="19" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">企业级全双工实时语音智能体网关（Java Spring Boot + Python Pipecat）</text>
+        <rect x="792" y="24" width="216" height="28" rx="4" fill="#f08a59" stroke="#f08a59" stroke-width="1" fill-opacity="0.10"/>
+        <text x="900" y="42" fill="#f08a59" font-size="9.5" font-weight="600" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">BARGE-IN ≤ 60MS · TTFB ~78MS</text>
+        <line x1="32" y1="68" x2="1008" y2="68" stroke="#f5f5f5" stroke-width="1" stroke-opacity="0.12"/>
+        <rect x="32" y="88" width="256" height="360" rx="8" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="1" fill-opacity="0.02" stroke-opacity="0.12"/>
+        <rect x="48" y="82" width="164" height="14" rx="2" fill="#2d3142"/>
+        <text x="130" y="92" fill="#949eb2" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">01 · PSTN &amp; RTP EDGE</text>
+        <rect x="336" y="88" width="368" height="360" rx="8" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="1" fill-opacity="0.02" stroke-opacity="0.12"/>
+        <rect x="352" y="82" width="236" height="14" rx="2" fill="#2d3142"/>
+        <text x="470" y="92" fill="#949eb2" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">02 · FULL-DUPLEX VOICE GATEWAY</text>
+        <rect x="752" y="88" width="256" height="360" rx="8" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="1" fill-opacity="0.02" stroke-opacity="0.12"/>
+        <rect x="768" y="82" width="188" height="14" rx="2" fill="#2d3142"/>
+        <text x="862" y="92" fill="#949eb2" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">03 · STREAMING AI STACK</text>
+        <line x1="160" y1="204" x2="160" y2="248" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#voice-arch-dark-arrow)"/>
+        <rect x="168" y="218" width="64" height="14" rx="2" fill="#2d3142"/>
+        <text x="200" y="228" fill="#949eb2" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">RTP 8KHZ</text>
+        <line x1="264" y1="164" x2="368" y2="164" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#voice-arch-dark-arrow)"/>
+        <rect x="288" y="142" width="56" height="14" rx="2" fill="#2d3142"/>
+        <text x="316" y="152" fill="#949eb2" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WS PCMU</text>
+        <line x1="264" y1="280" x2="368" y2="280" stroke="#f08a59" stroke-width="1.5" marker-end="url(#voice-arch-dark-arrow-accent)"/>
+        <rect x="268" y="258" width="96" height="14" rx="2" fill="#2d3142"/>
+        <text x="316" y="268" fill="#f08a59" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">60MS BARGE-IN</text>
+        <line x1="368" y1="304" x2="264" y2="304" stroke="#f08a59" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#voice-arch-dark-arrow-accent)"/>
+        <rect x="278" y="312" width="76" height="14" rx="2" fill="#2d3142"/>
+        <text x="316" y="322" fill="#f08a59" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CLEARAUDIO</text>
+        <line x1="264" y1="388" x2="368" y2="388" stroke="#739fdf" stroke-width="1.2" marker-end="url(#voice-arch-dark-arrow-link)"/>
+        <rect x="274" y="366" width="84" height="14" rx="2" fill="#2d3142"/>
+        <text x="316" y="376" fill="#949eb2" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WEBRTC / WS</text>
+        <line x1="520" y1="204" x2="520" y2="248" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#voice-arch-dark-arrow)"/>
+        <rect x="528" y="218" width="72" height="14" rx="2" fill="#2d3142"/>
+        <text x="564" y="228" fill="#949eb2" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">16KHZ PCM</text>
+        <line x1="520" y1="328" x2="520" y2="348" stroke="#bfc0c0" stroke-width="1.2" marker-end="url(#voice-arch-dark-arrow)"/>
+        <path d="M 672,172 H 716 Q 724,172 724,180 V 188 Q 724,196 732,196 H 776" fill="none" stroke="#739fdf" stroke-width="1.2" marker-end="url(#voice-arch-dark-arrow-link)"/>
+        <path d="M 776,220 H 744 Q 736,220 736,228 V 360 Q 736,368 728,368 H 672" fill="none" stroke="#bfc0c0" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#voice-arch-dark-arrow)"/>
+        <path d="M 672,396 H 704 Q 712,396 712,388 V 364 Q 712,356 720,356 H 776" fill="none" stroke="#f08a59" stroke-width="1.5" marker-end="url(#voice-arch-dark-arrow-accent)"/>
+        <path d="M 776,320 H 708 Q 700,320 700,312 V 156 Q 700,148 692,148 H 672" fill="none" stroke="#739fdf" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#voice-arch-dark-arrow-link)"/>
+        <rect x="56" y="124" width="208" height="80" rx="6" fill="#2d3142"/>
+        <rect x="56" y="124" width="208" height="80" rx="6" fill="#353a4f" stroke="#f5f5f5" stroke-width="1" stroke-opacity="0.28"/>
+        <rect x="64" y="132" width="56" height="14" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.38"/>
+        <text x="92" y="142" fill="#949eb2" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SIP/PBX</text>
+        <text x="160" y="170" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">FreeSWITCH 媒体集群</text>
+        <text x="160" y="187" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">8kHz G.711 · mod_audio_stream</text>
+        <rect x="56" y="248" width="208" height="80" rx="6" fill="#2d3142"/>
+        <rect x="56" y="248" width="208" height="80" rx="6" fill="#f08a59" stroke="#f08a59" stroke-width="1.5" fill-opacity="0.10"/>
+        <rect x="64" y="256" width="56" height="14" rx="2" fill="none" stroke="#f08a59" stroke-width="0.8"/>
+        <text x="92" y="266" fill="#f08a59" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">JAVA 17</text>
+        <text x="160" y="294" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">RTP 边缘打断网桥</text>
+        <text x="160" y="311" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">RFC3550 · 环形缓冲 · RMS VAD</text>
+        <rect x="56" y="348" width="208" height="80" rx="6" fill="#2d3142"/>
+        <rect x="56" y="348" width="208" height="80" rx="6" fill="#739fdf" stroke="#739fdf" stroke-width="1.2" fill-opacity="0.08"/>
+        <rect x="64" y="356" width="52" height="14" rx="2" fill="none" stroke="#739fdf" stroke-width="0.8"/>
+        <text x="90" y="366" fill="#739fdf" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">WEB UI</text>
+        <text x="160" y="394" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">实时语音监控大屏</text>
+        <text x="160" y="411" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">Spring Boot WS · 波形与延迟面板</text>
+        <rect x="368" y="124" width="304" height="80" rx="6" fill="#2d3142"/>
+        <rect x="368" y="124" width="304" height="80" rx="6" fill="#353a4f" stroke="#f5f5f5" stroke-width="1" stroke-opacity="0.28"/>
+        <rect x="376" y="132" width="44" height="14" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.38"/>
+        <text x="398" y="142" fill="#949eb2" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CODEC</text>
+        <text x="520" y="170" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">双向协议序列化与重采样</text>
+        <text x="520" y="187" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">SOXR VHQ 8kHz ⇄ 16kHz 无损滤波</text>
+        <rect x="368" y="248" width="304" height="80" rx="6" fill="#2d3142"/>
+        <rect x="368" y="248" width="304" height="80" rx="6" fill="#f08a59" stroke="#f08a59" stroke-width="1.5" fill-opacity="0.10"/>
+        <rect x="376" y="256" width="36" height="14" rx="2" fill="none" stroke="#f08a59" stroke-width="0.8"/>
+        <text x="394" y="266" fill="#f08a59" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+        <text x="520" y="294" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">全双工打断与状态机内核</text>
+        <text x="520" y="311" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">Silero VAD · 0.2ms 极速中断信号</text>
+        <rect x="368" y="348" width="304" height="80" rx="6" fill="#2d3142"/>
+        <rect x="368" y="348" width="304" height="80" rx="6" fill="#353a4f" stroke="#f5f5f5" stroke-width="1" stroke-opacity="0.28"/>
+        <rect x="376" y="356" width="56" height="14" rx="2" fill="none" stroke="#f5f5f5" stroke-width="0.8" stroke-opacity="0.38"/>
+        <text x="404" y="366" fill="#949eb2" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CONTEXT</text>
+        <text x="520" y="394" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">多轮话轮聚合器</text>
+        <text x="520" y="411" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">Spring Boot 3 / Pipecat 双引擎</text>
+        <rect x="776" y="156" width="208" height="88" rx="6" fill="#2d3142"/>
+        <rect x="776" y="156" width="208" height="88" rx="6" fill="#739fdf" stroke="#739fdf" stroke-width="1.2" fill-opacity="0.08"/>
+        <rect x="784" y="164" width="36" height="14" rx="2" fill="none" stroke="#739fdf" stroke-width="0.8"/>
+        <text x="802" y="174" fill="#739fdf" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">STT</text>
+        <text x="880" y="206" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">中文流式语音识别</text>
+        <text x="880" y="223" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">FunASR SenseVoice · Mock</text>
+        <rect x="776" y="296" width="208" height="104" rx="6" fill="#2d3142"/>
+        <rect x="776" y="296" width="208" height="104" rx="6" fill="#739fdf" stroke="#739fdf" stroke-width="1.2" fill-opacity="0.08"/>
+        <rect x="784" y="304" width="56" height="14" rx="2" fill="none" stroke="#739fdf" stroke-width="0.8"/>
+        <text x="812" y="314" fill="#739fdf" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">LLM+TTS</text>
+        <text x="880" y="354" fill="#f5f5f5" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">低延迟生成与流式合成</text>
+        <text x="880" y="371" fill="#bfc0c0" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">DeepSeek(NoThink) · MiniMax</text>
+        <line x1="32" y1="468" x2="1008" y2="468" stroke="#f5f5f5" stroke-width="1" stroke-opacity="0.12"/>
+        <text x="32" y="488" fill="#949eb2" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" letter-spacing="0.14em">LEGEND</text>
+        <rect x="96" y="478" width="12" height="12" rx="2" fill="#f08a59" stroke="#f08a59" stroke-width="1.4" fill-opacity="0.10"/>
+        <text x="114" y="488" fill="#bfc0c0" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">核心打断控制节点 (Focal)</text>
+        <rect x="288" y="478" width="12" height="12" rx="2" fill="#739fdf" stroke="#739fdf" stroke-width="1.2" fill-opacity="0.08"/>
+        <text x="306" y="488" fill="#bfc0c0" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">外部模型与 Web 交互端</text>
+        <rect x="451" y="478" width="12" height="12" rx="2" fill="#353a4f" stroke="#f5f5f5" stroke-width="1" stroke-opacity="0.28"/>
+        <text x="469" y="488" fill="#bfc0c0" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">内部编解码与状态组件</text>
+        <line x1="586" y1="484" x2="604" y2="484" stroke="#f08a59" stroke-width="1.6"/>
+        <text x="610" y="488" fill="#bfc0c0" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">毫秒级打断关键路径</text>
+        <line x1="717" y1="484" x2="735" y2="484" stroke="#bfc0c0" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <text x="741" y="488" fill="#bfc0c0" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">异步回传音频 / 文本流</text>
+      </svg>
