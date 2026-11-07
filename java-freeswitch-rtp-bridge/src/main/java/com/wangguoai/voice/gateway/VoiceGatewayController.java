@@ -75,4 +75,12 @@ public class VoiceGatewayController {
     public Map<String, Object> rtpBenchmark() throws Exception {
         return voiceService.runLiveUdpRtpBenchmark();
     }
+
+    @PostMapping("/chat")
+    public Map<String, Object> chatWithVoiceAgent(@RequestBody Map<String, Object> body) {
+        String text = String.valueOf(body.getOrDefault("text", "")).trim();
+        String codec = String.valueOf(body.getOrDefault("codec", "pcmu")).trim();
+        String agent = String.valueOf(body.getOrDefault("agent", "chatAgent")).trim();
+        return voiceService.processVoiceTurn(text, codec, agent);
+    }
 }

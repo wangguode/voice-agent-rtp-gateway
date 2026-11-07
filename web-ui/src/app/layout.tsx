@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "WG Realtime Voice Agents — FreeSWITCH 8kHz RTP & Full-Duplex Workbench",
+  title: "Voice Agent — RTP Gateway & Full-Duplex Workbench",
   description:
     "Enterprise Full-Duplex Voice Agent Workbench with FreeSWITCH mod_audio_stream, 8kHz PCMU/PCMA RTP, 60ms Barge-In, and Realtime Function Calling.",
 };

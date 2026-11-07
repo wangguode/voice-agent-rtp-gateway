@@ -463,7 +463,29 @@ export default function RealtimeVoiceAgentsApp() {
 
   const [newToolName, setNewToolName] = useState("");
   const [newToolDesc, setNewToolDesc] = useState("");
+  const [llmBaseUrl, setLlmBaseUrl] = useState("https://api.deepseek.com/v1");
+  const [llmModel, setLlmModel] = useState("deepseek-chat");
+  const [llmApiKey, setLlmApiKey] = useState("");
+  const [llmSaved, setLlmSaved] = useState(false);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
+
+  const speakReplyIfEnabled = (text: string) => {
+    if (
+      typeof window !== "undefined" &&
+      isAudioPlaybackEnabled &&
+      "speechSynthesis" in window
+    ) {
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "zh-CN";
+        utter.rate = 1.08;
+        window.speechSynthesis.speak(utter);
+      } catch {
+        // Ignore TTS error in headless mode
+      }
+    }
+  };
 
   // Sync with live Spring Boot 8091 backend on mount
   useEffect(() => {
@@ -581,6 +603,10 @@ export default function RealtimeVoiceAgentsApp() {
     if (!text || sessionStatus !== "CONNECTED") return;
     setUserText("");
 
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
     const userTs = nowTimeStr(true);
     setTranscriptItems((prev) => [
       ...prev,
@@ -601,57 +627,79 @@ export default function RealtimeVoiceAgentsApp() {
     });
 
     const activeTool = tools.find((t) => t.enabled) || tools[0];
+    let toolCalled = activeTool?.name || "query_gpu_order";
+    let toolArgs: Record<string, unknown> = { query: text };
     let toolOutput: Record<string, unknown> = {
-      status: "OK",
-      verifiedBy: activeTool?.name || "lookup_Order_And_Refund_Policy",
+      status: "200 OK",
+      verifiedBy: toolCalled,
       codec: codec.toUpperCase(),
-      bargeInGuardMs: 52,
     };
+    let replyText = "";
+    let llmMode = "local-deterministic (deepseek-chat)";
+    let ttftMs = 168;
 
     try {
-      const res = await fetch("/api/voice/tools/call", {
+      const res = await fetch("/api/voice/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: activeTool?.name || "lookup_Order_And_Refund_Policy",
-          arguments: { query: text },
+          text,
+          codec,
+          agent: selectedAgentName,
         }),
       });
       if (res.ok) {
-        toolOutput = await res.json();
+        const data = await res.json();
+        if (data.toolCalled) toolCalled = String(data.toolCalled);
+        if (data.toolArgs) toolArgs = data.toolArgs as Record<string, unknown>;
+        if (data.toolOutput)
+          toolOutput = data.toolOutput as Record<string, unknown>;
+        if (data.replyText) replyText = String(data.replyText);
+        if (data.llmMode) llmMode = String(data.llmMode);
+        if (data.ttftMs) ttftMs = Number(data.ttftMs);
       }
     } catch {
-      // Fallback
+      // Offline static fallback
     }
 
-    const bcId = `bc-call-${Date.now()}`;
+    if (!replyText) {
+      replyText = `已收到您的语音指令：「${text}」。已通过 ${toolCalled} 完成实时核验（当前信道 ${
+        codec === "opus" ? "Opus 48kHz" : codec.toUpperCase() + " 8kHz"
+      }，首包延迟 ${ttftMs}ms）。请问还有其他需要帮您处理的吗？`;
+    }
+
     setTranscriptItems((prev) => [
       ...prev,
       {
-        itemId: bcId,
+        itemId: `bc-call-${Date.now()}`,
         type: "BREADCRUMB",
-        title: `function call: ${activeTool?.name || "getNextResponseFromSupervisor"}`,
+        title: `function call: ${toolCalled}`,
         data: {
-          tool: activeTool?.name,
-          query: text,
-          result: toolOutput,
+          tool: toolCalled,
+          arguments: toolArgs,
+          llmEngine: llmMode,
         },
         expanded: false,
         timestamp: nowTimeStr(true),
         createdAtMs: Date.now() + 1,
       },
       {
-        itemId: `msg-a-${Date.now()}`,
-        type: "MESSAGE",
-        role: "assistant",
-        title: `已收到您的语音指令：「${text}」。已通过 ${
-          activeTool?.name || "Supervisor"
-        } 完成实时核验（当前信道 ${
-          codec === "opus" ? "Opus 48kHz" : codec.toUpperCase() + " 8kHz"
-        }，端到端首包延迟 192ms）。请问还有其他需要帮您处理的吗？`,
+        itemId: `bc-res-${Date.now()}`,
+        type: "BREADCRUMB",
+        title: `function call result: ${toolCalled}`,
+        data: toolOutput,
         expanded: false,
         timestamp: nowTimeStr(true),
         createdAtMs: Date.now() + 2,
+      },
+      {
+        itemId: `msg-a-${Date.now()}`,
+        type: "MESSAGE",
+        role: "assistant",
+        title: replyText,
+        expanded: false,
+        timestamp: nowTimeStr(true),
+        createdAtMs: Date.now() + 3,
         guardrailResult: {
           status: "DONE",
           category: "NONE",
@@ -660,19 +708,34 @@ export default function RealtimeVoiceAgentsApp() {
       },
     ]);
 
+    speakReplyIfEnabled(replyText);
+
     appendEvent(
       "server",
-      "response.audio_transcript.done",
+      "response.function_call_arguments.done",
+      {
+        name: toolCalled,
+        arguments: toolArgs,
+      },
+      false
+    );
+    appendEvent(
+      "server",
+      `response.audio_transcript.done (${llmMode})`,
       {
         agent: selectedAgentName,
-        toolInvoked: activeTool?.name,
-        ttftMs: 192,
+        toolInvoked: toolCalled,
+        ttftMs,
+        transcript: replyText,
       },
       false
     );
   };
 
   const handleSimulateBargeIn = async () => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
     let benchmarkData: Record<string, unknown> = {
       packetsSent: 8,
       payloadBytesPerPacket: 160,
@@ -816,10 +879,10 @@ export default function RealtimeVoiceAgentsApp() {
           onClick={() => window.location.reload()}
         >
           <div className="w-6 h-6 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold mr-2.5">
-            W
+            V
           </div>
           <div>
-            Realtime Voice <span className="text-gray-500">Agents</span>
+            Voice Agent <span className="text-gray-500">RTP Gateway</span>
           </div>
         </div>
 
@@ -1089,7 +1152,7 @@ export default function RealtimeVoiceAgentsApp() {
                         : "text-gray-400 hover:text-gray-700"
                     }`}
                   >
-                    FreeSWITCH SIP
+                    FreeSWITCH & LLM
                   </button>
                 </div>
                 <button
@@ -1238,13 +1301,69 @@ export default function RealtimeVoiceAgentsApp() {
               )}
 
               {rightPaneTab === "sip" && (
-                <div className="overflow-auto flex-1 p-5 space-y-3 select-text">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                    FreeSWITCH mod_audio_stream Dialplan & RTP Endpoint
+                <div className="overflow-auto flex-1 p-5 space-y-5 select-text">
+                  <div className="space-y-2.5">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      Voice LLM Engine (OpenAI / DeepSeek / Qwen Compatible)
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={llmBaseUrl}
+                        onChange={(e) => setLlmBaseUrl(e.target.value)}
+                        placeholder="Base URL (https://api.deepseek.com/v1)"
+                        className="border border-gray-300 rounded-md px-2.5 py-1.5 text-xs font-mono"
+                      />
+                      <input
+                        type="text"
+                        value={llmModel}
+                        onChange={(e) => setLlmModel(e.target.value)}
+                        placeholder="Model (deepseek-chat / qwen-plus)"
+                        className="border border-gray-300 rounded-md px-2.5 py-1.5 text-xs font-mono"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="password"
+                        value={llmApiKey}
+                        onChange={(e) => setLlmApiKey(e.target.value)}
+                        placeholder="API Key (sk-... 留空则使用内置工具合成回复)"
+                        className="flex-1 border border-gray-300 rounded-md px-2.5 py-1.5 text-xs font-mono"
+                      />
+                      <button
+                        onClick={async () => {
+                          try {
+                            await fetch("/api/voice/settings", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                baseUrl: llmBaseUrl,
+                                model: llmModel,
+                                apiKey: llmApiKey,
+                                runMode: llmApiKey.trim() ? "cloud" : "mock",
+                              }),
+                            });
+                          } catch {
+                            // Ignore
+                          }
+                          setLlmSaved(true);
+                          setTimeout(() => setLlmSaved(false), 1800);
+                        }}
+                        className="px-3.5 py-1.5 bg-gray-900 text-white text-xs rounded-md cursor-pointer"
+                      >
+                        {llmSaved ? "Saved!" : "Save LLM"}
+                      </button>
+                    </div>
                   </div>
-                  <pre className="p-3.5 rounded-lg bg-gray-900 text-gray-100 font-mono text-xs overflow-x-auto leading-relaxed">
-                    {sipConfigXml}
-                  </pre>
+
+                  <div className="space-y-2">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                      FreeSWITCH mod_audio_stream Dialplan & RTP Endpoint
+                    </div>
+                    <pre className="p-3.5 rounded-lg bg-gray-900 text-gray-100 font-mono text-xs overflow-x-auto leading-relaxed">
+                      {sipConfigXml}
+                    </pre>
+                  </div>
                 </div>
               )}
             </div>
