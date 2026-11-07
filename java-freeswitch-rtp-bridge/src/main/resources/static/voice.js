@@ -102,8 +102,18 @@
     const html = document.documentElement;
     const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
     html.setAttribute("data-theme", next);
-    $("btn-theme").textContent = next === "dark" ? "亮色模式" : "暗黑模式";
   });
+
+  if ($("btn-toggle-inspector")) {
+    $("btn-toggle-inspector").addEventListener("click", () => {
+      $("inspector-modal").classList.remove("hidden");
+    });
+  }
+  if ($("btn-close-inspector")) {
+    $("btn-close-inspector").addEventListener("click", () => {
+      $("inspector-modal").classList.add("hidden");
+    });
+  }
 
   // 顶部导航与右侧 Tab 联动
   document.querySelectorAll("[data-open-drawer]").forEach((btn) => {
