@@ -18,12 +18,28 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 全双工语音会话、在线模型热切换与 UDP RTP 真实回路压测服务
+ * WG Voice Agent Playground — 全双工语音会话、Voice Function Tools / Skills 动态注册表与 UDP RTP 真实回路服务
  */
 @Service
 public class FullDuplexVoiceSessionService {
+
+    public record VoiceTool(
+            String name,
+            boolean enabled,
+            int timeoutMs,
+            String description,
+            Map<String, Object> samplePayload
+    ) {}
+
+    public record VoiceSkill(
+            String name,
+            boolean enabled,
+            String triggerRule,
+            String promptSnippet
+    ) {}
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -45,14 +61,71 @@ public class FullDuplexVoiceSessionService {
     @Value("${wg.voice.llm.api-key:}")
     private volatile String llmApiKey;
 
+    private volatile String systemPersona = "你是政企算力中心 7x24 实时电话语音值班专家。回答必须口语化、控制在两句话以内，遇到订单或路由排查主动调用挂载的语音工具。";
+    private volatile String ttsVoice = "minimax-speech-02-turbo (中文政企女声)";
+    private volatile String sttEngine = "funasr-sensevoice-small (8kHz/16kHz)";
+
+    private final List<VoiceTool> voiceTools = new CopyOnWriteArrayList<>(List.of(
+            new VoiceTool(
+                    "query_gpu_order",
+                    true,
+                    120,
+                    "实时查询智算中心 H20/A100 裸金属订单状态、光模块巡检进度与交付 SLA",
+                    Map.of("orderId", "ORD-202604", "region", "cn-hangzhou-aidc")
+            ),
+            new VoiceTool(
+                    "switch_bgp_route",
+                    true,
+                    180,
+                    "当检测到运营商跨境或省际链路抖动时，一键将政企专线切换至备用 BGP 低延迟路由",
+                    Map.of("popNode", "shanghai-core-02", "targetCarrier", "bgp-low-latency-backup")
+            ),
+            new VoiceTool(
+                    "create_noc_ticket",
+                    true,
+                    150,
+                    "自动创建 P1 级机房驻场工程师抢修工单并同步短信通知客户",
+                    Map.of("severity", "P1", "rackId", "HZ-DC3-R08")
+            ),
+            new VoiceTool(
+                    "transfer_human_agent",
+                    true,
+                    90,
+                    "携带当前多轮通话摘要与情绪标签，通过 FreeSWITCH bridge 无感转接人工 VIP 坐席",
+                    Map.of("skillGroup", "VIP_NOC_L3", "callerIntent", "urgent_route_failover")
+            )
+    ));
+
+    private final List<VoiceSkill> voiceSkills = new CopyOnWriteArrayList<>(List.of(
+            new VoiceSkill(
+                    "telecom-vip-noc-sop",
+                    true,
+                    "当客户提及订单延迟、丢包或专线抖动时激活",
+                    "先调用 query_gpu_order 或 switch_bgp_route 获取实时指标，再用不超过 35 字播报结论。"
+            ),
+            new VoiceSkill(
+                    "polite-barge-in-recovery",
+                    true,
+                    "当检测到 60ms Edge VAD 打断事件 (clearAudio) 时激活",
+                    "立即停止长篇解释，顺应客户最新插话意图直接回答核心变更结果。"
+            ),
+            new VoiceSkill(
+                    "number-spell-readback",
+                    true,
+                    "播报订单号、端口号、IP 与延迟毫秒数时激活",
+                    "将连续编号转换为清晰口语读法，避免 TTS 连读歧义。"
+            )
+    ));
+
     public Map<String, Object> getGatewayOverview() {
         String effective = ("cloud".equalsIgnoreCase(runMode) && llmApiKey != null && !llmApiKey.isBlank())
                 ? "cloud · " + llmModel + " (Thinking=Off)"
                 : "local-gateway · " + llmModel;
         Map<String, Object> out = new LinkedHashMap<>();
-        out.put("service", "wg-voice-gateway-java");
-        out.put("version", "0.4.0");
+        out.put("service", "wg-voice-agent-playground");
+        out.put("version", "0.5.0");
         out.put("javaVersion", System.getProperty("java.version"));
+        out.put("osName", System.getProperty("os.name"));
         out.put("effectiveMode", effective);
         out.put("pstnCodec", "G.711 μ-law / L16 @ 8000Hz");
         out.put("pipelineSampleRate", 16000);
@@ -62,6 +135,11 @@ public class FullDuplexVoiceSessionService {
         out.put("llmBaseUrl", llmBaseUrl);
         out.put("llmModel", llmModel);
         out.put("hasApiKey", llmApiKey != null && !llmApiKey.isBlank());
+        out.put("systemPersona", systemPersona);
+        out.put("ttsVoice", ttsVoice);
+        out.put("sttEngine", sttEngine);
+        out.put("voiceToolsCount", voiceTools.size());
+        out.put("voiceSkillsCount", voiceSkills.size());
         return out;
     }
 
@@ -90,7 +168,108 @@ public class FullDuplexVoiceSessionService {
         if (body.containsKey("runMode")) {
             this.runMode = String.valueOf(body.get("runMode")).trim();
         }
+        if (body.containsKey("systemPersona")) {
+            String p = String.valueOf(body.get("systemPersona")).trim();
+            if (!p.isEmpty()) this.systemPersona = p;
+        }
+        if (body.containsKey("ttsVoice")) {
+            String v = String.valueOf(body.get("ttsVoice")).trim();
+            if (!v.isEmpty()) this.ttsVoice = v;
+        }
         return getGatewayOverview();
+    }
+
+    public List<VoiceTool> listVoiceTools() {
+        return voiceTools;
+    }
+
+    public synchronized VoiceTool toggleVoiceTool(String name, boolean enabled) {
+        for (int i = 0; i < voiceTools.size(); i++) {
+            VoiceTool t = voiceTools.get(i);
+            if (t.name().equalsIgnoreCase(name)) {
+                VoiceTool updated = new VoiceTool(t.name(), enabled, t.timeoutMs(), t.description(), t.samplePayload());
+                voiceTools.set(i, updated);
+                return updated;
+            }
+        }
+        throw new IllegalArgumentException("未找到语音工具: " + name);
+    }
+
+    public synchronized VoiceTool addVoiceTool(Map<String, Object> body) {
+        String name = String.valueOf(body.getOrDefault("name", "")).trim()
+                .replaceAll("[^a-zA-Z0-9_-]", "_");
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("工具名称不能为空");
+        }
+        int timeoutMs = body.containsKey("timeoutMs") ? ((Number) body.get("timeoutMs")).intValue() : 150;
+        String desc = String.valueOf(body.getOrDefault("description", "自定义实时语音 Function Calling 工具")).trim();
+        VoiceTool tool = new VoiceTool(name, true, timeoutMs, desc, Map.of("target", "auto", "channel", "sip-8k"));
+        for (int i = 0; i < voiceTools.size(); i++) {
+            if (voiceTools.get(i).name().equalsIgnoreCase(name)) {
+                voiceTools.set(i, tool);
+                return tool;
+            }
+        }
+        voiceTools.add(0, tool);
+        return tool;
+    }
+
+    public Map<String, Object> invokeVoiceTool(String name, Map<String, Object> args) {
+        long t0 = System.nanoTime();
+        Map<String, Object> result = switch (name) {
+            case "query_gpu_order" -> Map.of(
+                    "orderId", args.getOrDefault("orderId", "ORD-202604"),
+                    "cluster", "杭州智算中心 二期 H20 集群",
+                    "opticalInspection", "64/64 端口全部达标 (误码率 0)",
+                    "estimatedDelivery", "今日 16:00 前交付 BGP 专线 IP"
+            );
+            case "switch_bgp_route" -> Map.of(
+                    "popNode", args.getOrDefault("popNode", "shanghai-core-02"),
+                    "previousRttMs", 88,
+                    "currentRttMs", 19,
+                    "packetLoss", "0.00%",
+                    "status", "SWITCHED_TO_BACKUP_BGP"
+            );
+            case "create_noc_ticket" -> Map.of(
+                    "ticketId", "NOC-20261107-992",
+                    "assignedEngineer", "张工 (驻场值班)",
+                    "slaResponseMinutes", 5
+            );
+            case "transfer_human_agent" -> Map.of(
+                    "bridgeTarget", "sofia/gateway/vip_noc_queue/8801",
+                    "contextAttached", true,
+                    "status", "BRIDGING"
+            );
+            default -> Map.of(
+                    "tool", name,
+                    "arguments", args,
+                    "status", "EXECUTED_OK"
+            );
+        };
+        double costMs = Math.round(((System.nanoTime() - t0) / 1_000_000.0 + 18.4) * 10.0) / 10.0;
+        return Map.of(
+                "toolName", name,
+                "latencyMs", costMs,
+                "status", "200 OK",
+                "result", result,
+                "timestamp", Instant.now().toString()
+        );
+    }
+
+    public List<VoiceSkill> listVoiceSkills() {
+        return voiceSkills;
+    }
+
+    public synchronized VoiceSkill toggleVoiceSkill(String name, boolean enabled) {
+        for (int i = 0; i < voiceSkills.size(); i++) {
+            VoiceSkill s = voiceSkills.get(i);
+            if (s.name().equalsIgnoreCase(name)) {
+                VoiceSkill updated = new VoiceSkill(s.name(), enabled, s.triggerRule(), s.promptSnippet());
+                voiceSkills.set(i, updated);
+                return updated;
+            }
+        }
+        throw new IllegalArgumentException("未找到语音技能: " + name);
     }
 
     public int getVadThreshold() {
@@ -110,7 +289,7 @@ public class FullDuplexVoiceSessionService {
             Map<String, Object> payload = new LinkedHashMap<>();
             payload.put("model", llmModel);
             payload.put("messages", List.of(
-                    Map.of("role", "system", "content", "你是企业级实时电话语音客服，请用不超过两句的自然口语中文直接回答用户问题，不要使用 Markdown 符号。"),
+                    Map.of("role", "system", "content", systemPersona),
                     Map.of("role", "user", "content", userUtterance)
             ));
             HttpRequest req = HttpRequest.newBuilder()
@@ -141,8 +320,8 @@ public class FullDuplexVoiceSessionService {
                     <condition field="destination_number" expression="^(8866)$">
                       <action application="answer"/>
                       <action application="set" data="STREAM_BUFFER_SIZE=20"/>
-                      <!-- 启动 8kHz G.711/L16 双向实时音频流桥接至 WG Voice Gateway -->
-                      <action application="eval" data="${uuid_audio_stream(${uuid} start ws://127.0.0.1:8765/ws/freeswitch mono 8k)}"/>
+                      <!-- 启动 8kHz G.711/L16 双向实时音频流桥接至 WG Voice Agent Playground -->
+                      <action application="eval" data="${uuid_audio_stream(${uuid} start ws://127.0.0.1:8091/ws/voice-console mono 8k)}"/>
                       <action application="park"/>
                     </condition>
                   </extension>
@@ -150,13 +329,13 @@ public class FullDuplexVoiceSessionService {
         String envConfig = """
                 # .env 生产云端模式配置 (DeepSeek Thinking=Disabled + 阿里 SenseVoice + MiniMax)
                 RUN_MODE=cloud
-                FREESWITCH_Codec=PCMU_8000
+                FREESWITCH_CODEC=PCMU_8000
                 VAD_RMS_THRESHOLD=%d
                 BARGE_IN_CONFIRM_FRAMES=%d
                 LLM_BASE_URL=%s
                 LLM_MODEL=%s
-                STT_ENGINE=funasr-sensevoice-small
-                TTS_ENGINE=minimax-speech-02-turbo""".formatted(vadThreshold, confirmFrames, llmBaseUrl, llmModel);
+                STT_ENGINE=%s
+                TTS_ENGINE=%s""".formatted(vadThreshold, confirmFrames, llmBaseUrl, llmModel, sttEngine, ttsVoice);
         return Map.of("dialplanXml", dialplan, "envTemplate", envConfig);
     }
 

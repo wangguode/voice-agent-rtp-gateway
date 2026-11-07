@@ -53,25 +53,28 @@
 
 ---
 
-## 一、Java 17 + Spring Boot 3 全栈实时语音网关与监控大屏
+## 一、Java 17 + Spring Boot 3 实时语音智能体工作台 (`WG Voice Agent Playground`)
 
-针对 Java 后端与通信网关研发团队，`java-freeswitch-rtp-bridge/` 模块基于 **Java 17 + Spring Boot 3.3.5 + WebSocket + RFC 3550 UDP Socket** 提供了完整的边缘语音网关与全新设计的实时监控大屏（`WG Voice Gateway Console`，包名 `com.wangguoai.voice.gateway`）：
+针对 Java 后端与通信网关研发团队，`java-freeswitch-rtp-bridge/` 模块基于 **Java 17 + Spring Boot 3.3.5 + WebSocket + RFC 3550 UDP Socket** 提供了工业级三栏实时语音智能体工作台（`WG Voice Agent Playground`，包名 `com.wangguoai.voice.gateway`），支持在线开关与新增语音 Function Calling 工具、配置语音 SOP 技能、调节边缘 VAD 阈值及 FreeSWITCH 8kHz G.711 毫秒级打断演练：
 
 <p align="center">
-  <img alt="WG Voice Gateway Console Preview" src="./docs/assets/voice-console-preview.png" width="100%">
+  <img alt="WG Voice Agent Playground Preview" src="./docs/assets/voice-console-preview.png" width="100%">
 </p>
 
-### 30 秒一键启动 Java 语音网关与监控大屏
+### 30 秒跨平台一键启动（支持 macOS / Windows / Linux）
 
 ```bash
 git clone https://github.com/wangguode/voice-agent-rtp-gateway.git
-cd voice-agent-rtp-gateway/java-freeswitch-rtp-bridge
+cd voice-agent-rtp-gateway
 
-# 1. 运行自动化集成单测（含真实本地 UDP Socket RTP 收发与 60ms 打断断言）
-mvn test
+# 方式 A：macOS / Linux 一键启动（默认监听 http://127.0.0.1:8091）
+./start-mac-linux.sh
 
-# 2. 启动 Spring Boot 3 实时语音网关与监控大屏（默认监听 http://localhost:8091）
-mvn spring-boot:run
+# 方式 B：Windows 10/11 一键启动（CMD / PowerShell）
+start-windows.bat
+
+# 方式 C：Maven 标准测试与启动
+cd java-freeswitch-rtp-bridge && mvn test && mvn spring-boot:run
 ```
 
 打开浏览器访问 **`http://localhost:8091`** 即可体验：

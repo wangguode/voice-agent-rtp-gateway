@@ -1,180 +1,278 @@
-<!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gemini Live · Voice Agent</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WG Voice Agent Playground — Enterprise Full-Duplex RTP &amp; SIP Workbench</title>
   <link rel="stylesheet" href="/voice.css" />
 </head>
 <body>
-  <div class="live-shell">
-    <!-- 1. 左侧极简通话栏 (220px) -->
-    <aside class="live-sidebar">
-      <div class="sidebar-top">
-        <div class="brand">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L14.6 9.4L22 12L14.6 14.6L12 22L9.4 14.6L2 12L9.4 9.4L12 2Z" fill="url(#gem-grad)"/>
-            <defs>
-              <linearGradient id="gem-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#38BDF8"/>
-                <stop offset="50%" stop-color="#818CF8"/>
-                <stop offset="100%" stop-color="#34D399"/>
-              </linearGradient>
-            </defs>
+  <div class="playground-shell">
+    <!-- ==================== 顶栏 PlaygroundHeader (对标开源 agents-playground PlaygroundHeader.tsx) ==================== -->
+    <header class="pg-header">
+      <div class="pg-header-left">
+        <div class="pg-logo-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="22"></line>
           </svg>
-          <span class="brand-name">Gemini Live</span>
         </div>
-        <button id="btn-start-call" class="icon-circle-btn" type="button" title="New Voice Call">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-      </div>
-
-      <div class="nav-label">Active Trunks</div>
-      <div class="trunk-list">
-        <button class="session-item active" data-scene="gpu_order" type="button">
-          <span class="dot cyan"></span>
-          <span>GPU Order Support</span>
-        </button>
-        <button class="session-item" data-scene="incident" type="button">
-          <span class="dot amber"></span>
-          <span>NOC Traffic Switch</span>
-        </button>
-        <button class="session-item" data-scene="billing" type="button">
-          <span class="dot emerald"></span>
-          <span>Enterprise Billing</span>
-        </button>
-      </div>
-
-      <div class="sidebar-bottom">
-        <label class="tts-check">
-          <input id="chk-browser-tts" type="checkbox" checked />
-          <span>Voice Output (TTS)</span>
-        </label>
-        <div class="bottom-icons">
-          <button id="btn-toggle-inspector" class="icon-btn" type="button" title="SIP/RTP Diagnostics">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </button>
-          <button id="btn-theme" class="icon-btn" type="button" title="Toggle Theme">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>
-          </button>
-          <button id="btn-open-settings" class="icon-btn" type="button" title="Voice &amp; Model Settings">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </button>
-        </div>
-      </div>
-    </aside>
-
-    <!-- 2. 中央：Gemini Live 声波舞台 + 实时语音对话 -->
-    <main class="live-stage">
-      <!-- 极简顶栏 -->
-      <header class="stage-topbar">
-        <div class="live-status">
-          <span class="pulse-dot"></span>
-          <span id="call-state">LIVE · FULL-DUPLEX</span>
-          <span id="mode-label" class="dim-pill">8kHz PCMU</span>
-        </div>
-        <div class="latency-badges">
-          <span>VAD <strong id="kpi-barge-ms">60ms</strong></span>
-          <span>Flush <strong id="kpi-clear-ms">0.16ms</strong></span>
-          <span>TTFB <strong id="kpi-ttfb">72.1ms</strong></span>
-          <span class="hidden" id="kpi-dropped">12f</span>
-          <span class="hidden" id="queue-depth-text"></span>
-        </div>
-      </header>
-
-      <!-- Gemini Live 声学光晕波形与 16 槽 RTP 指示器 -->
-      <div class="orb-hero">
-        <canvas id="voice-spectrum-canvas" width="520" height="84"></canvas>
-        <div id="ring-slots" class="mini-ring-bar" title="16-Slot 20ms RTP Ring Buffer"></div>
-      </div>
-
-      <!-- 实时全双工对话流 -->
-      <div id="dialogue-list" class="transcript-stream" role="log" aria-live="polite"></div>
-
-      <!-- 底部悬浮语音控制舱 (Mic + Input + Interrupt + Send) -->
-      <div class="dock-wrap">
-        <div class="voice-dock">
-          <button id="btn-mic-toggle" class="dock-mic-btn" type="button">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-            <span>Mic</span>
-          </button>
-          <input
-            id="barge-input"
-            class="dock-input"
-            type="text"
-            placeholder="Speak or type to interrupt at any time..."
-          />
-          <button id="btn-manual-barge" class="dock-interrupt-btn" type="button">⚡ Interrupt</button>
-          <button id="btn-send-barge" class="dock-send-btn" type="button" aria-label="Send">
-            <svg width="13" height="13" viewBox="0 0 256 256" fill="currentColor"><path d="M208.49,120.49a12,12,0,0,1-17,0L140,69V216a12,12,0,0,1-24,0V69L64.49,120.49a12,12,0,0,1-17-17l72-72a12,12,0,0,1,17,0l72,72A12,12,0,0,1,208.49,120.49Z"/></svg>
-          </button>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- 3. 按需打开的底层 SIP/RTP 压测与 FreeSWITCH XML 诊断弹窗（默认隐藏，保证主界面 100% 纯净） -->
-  <div id="inspector-modal" class="modal-backdrop hidden">
-    <div class="modal-card wide">
-      <div class="modal-hdr">
-        <div class="modal-tabs">
-          <button class="drawer-tab active" data-tab="tab-udp" type="button">RFC 3550 UDP Loopback</button>
-          <button class="drawer-tab" data-tab="tab-fs" type="button">FreeSWITCH XML</button>
-          <button class="drawer-tab" data-tab="tab-ws" type="button">WebSocket Wire</button>
-        </div>
-        <div style="display:flex;gap:6px">
-          <button id="btn-udp-bench" class="action-pill" type="button">Run UDP Test</button>
-          <button id="btn-close-inspector" class="close-btn" type="button">✕</button>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div id="tab-udp" class="drawer-pane active">
-          <div id="bench-summary" class="bench-grid"></div>
-          <div id="packet-list" class="pkt-list"></div>
-          <pre id="udp-output" class="code-pre"></pre>
-        </div>
-        <div id="tab-fs" class="drawer-pane">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="dim-pill">conf/dialplan/default.xml</span>
-            <button id="btn-copy-xml" class="action-pill" type="button">Copy XML</button>
+        <div class="pg-brand-group">
+          <div class="pg-title-row">
+            <span class="pg-brand-title">WG Voice Agent Playground</span>
+            <span class="pg-version-pill">v0.5 SIP/RTP</span>
           </div>
-          <pre id="fs-xml-box" class="code-pre"></pre>
-          <pre id="fs-env-box" class="code-pre"></pre>
-        </div>
-        <div id="tab-ws" class="drawer-pane">
-          <pre id="ws-frame-log" class="code-pre"></pre>
+          <div class="pg-subtitle">FreeSWITCH 8kHz G.711 · 60ms Edge Barge-In · Full-Duplex Tool Calling</div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- 4. 设置弹窗 -->
-  <div id="voice-settings-modal" class="modal-backdrop hidden">
-    <div class="modal-card">
-      <div class="modal-hdr">
-        <strong>Voice &amp; LLM Settings</strong>
-        <button id="btn-close-settings" class="close-btn" type="button">✕</button>
+      <div class="pg-header-center">
+        <div class="pg-telemetry-pill">
+          <span class="pg-dot cyan"></span>
+          <span>SIP Room: <strong id="hdrRoomName">sip-noc-8866</strong></span>
+        </div>
+        <div class="pg-telemetry-pill">
+          <span>Codec: <strong>PCMU 8kHz → 16kHz</strong></span>
+        </div>
+        <div class="pg-telemetry-pill">
+          <span>E2E Latency: <strong id="hdrE2eMs" class="text-cyan">450 ms</strong></span>
+        </div>
+        <div class="pg-telemetry-pill">
+          <span>Active Tools: <strong id="hdrActiveToolsCount" class="text-emerald">4 Mounted</strong></span>
+        </div>
       </div>
-      <div class="modal-form">
-        <label>Edge VAD Threshold (RMS)
-          <input id="v-cfg-rms" class="clean-input" type="number" value="900" />
-        </label>
-        <label>Confirm Frames (×20ms)
-          <input id="v-cfg-frames" class="clean-input" type="number" value="3" />
-        </label>
-        <label>Base URL
-          <input id="v-cfg-baseurl" class="clean-input" type="text" value="https://api.deepseek.com/v1" />
-        </label>
-        <label>Model
-          <input id="v-cfg-model" class="clean-input" type="text" value="deepseek-chat" />
-        </label>
-        <label>API Key
-          <input id="v-cfg-apikey" class="clean-input" type="password" placeholder="sk-..." />
-        </label>
+
+      <div class="pg-header-right">
+        <button id="btnOpenFsModal" class="pg-btn-outline">FreeSWITCH XML</button>
+        <button id="btnRunUdpBench" class="pg-btn-accent">UDP 8-Packet Loopback</button>
+        <button id="btnConnectSession" class="pg-btn-connect connected">
+          <span class="conn-dot"></span>
+          <span id="connBtnLabel">Connected · SIP 8866</span>
+        </button>
       </div>
-      <div class="modal-ftr">
-        <button id="btn-cancel-settings" class="action-pill" type="button">Cancel</button>
-        <button id="btn-save-settings" class="action-pill primary" type="button">Save</button>
+    </header>
+
+    <!-- ==================== 三栏主工作台 (对标开源 agents-playground Playground.tsx 工业级三栏 Tile 架构) ==================== -->
+    <main class="pg-main-grid">
+      <!-- ==================== 左栏：AGENT AUDIO VISUALIZER + RTP 16-SLOT RING BUFFER + METRICS ==================== -->
+      <section class="pg-tile pg-col-left">
+        <div class="pg-tile-header">
+          <span class="pg-tile-title">AUDIO TRACK &amp; 20MS RTP STREAM</span>
+          <span id="agentStateBadge" class="state-pill speaking">AGENT SPEAKING</span>
+        </div>
+
+        <div class="pg-tile-body">
+          <!-- Agent Audio BarVisualizer (复刻 @livekit/components-react BarVisualizer 发光多频段声波仪) -->
+          <div class="audio-visualizer-stage">
+            <div class="visualizer-top-meta">
+              <span class="mono-tag">Track: agent-tts-downlink (MiniMax-Speech-02-Turbo)</span>
+              <span id="rmsLiveReadout" class="mono-tag text-cyan">RMS: 2640 / Thr: 1200</span>
+            </div>
+            <canvas id="audioSpectrumCanvas" width="420" height="145"></canvas>
+            <div class="visualizer-controls-bar">
+              <button id="btnToggleMic" class="ctrl-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                </svg>
+                <span id="micBtnText">Start Browser Mic</span>
+              </button>
+              <button id="btnTriggerBargeIn" class="ctrl-pill danger">
+                <span>⚡ Simulate 60ms Barge-In (clearAudio)</span>
+              </button>
+              <button id="btnToggleTtsMute" class="ctrl-pill">
+                <span id="ttsMuteText">🔊 Speaker: ON</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 16-Slot 20ms Outbound RTP Ring Buffer 实时帧槽矩阵 -->
+          <div class="sub-panel">
+            <div class="sub-panel-header">
+              <span>16-SLOT 20MS RTP RING BUFFER (G.711 μ-LAW)</span>
+              <span id="ringBufferStatusText" class="mono-tag text-emerald">11/16 Queued</span>
+            </div>
+            <div id="rtpSlotsGrid" class="rtp-slots-grid"></div>
+            <div class="ring-legend-row">
+              <span><i class="lg-dot cyan"></i>Playing TTS Frame (320B)</span>
+              <span><i class="lg-dot red"></i>Flushed by clearAudio (&lt;60ms)</span>
+            </div>
+          </div>
+
+          <!-- Pipeline Latency Waterfall & UDP Socket Trace -->
+          <div class="sub-panel">
+            <div class="sub-panel-header">
+              <span>PIPELINE TELEMETRY &amp; UDP SOCKET BENCHMARK</span>
+              <span id="udpPortBadge" class="mono-tag">UDP 127.0.0.1</span>
+            </div>
+            <div class="latency-bars-stack">
+              <div class="lat-row">
+                <span class="lat-name">Edge VAD + Resampler</span>
+                <div class="lat-track"><div class="lat-fill cyan" style="width:16%"></div></div>
+                <span class="lat-val">60 ms</span>
+              </div>
+              <div class="lat-row">
+                <span class="lat-name">FunASR SenseVoice</span>
+                <div class="lat-track"><div class="lat-fill emerald" style="width:20%"></div></div>
+                <span class="lat-val">75 ms</span>
+              </div>
+              <div class="lat-row">
+                <span class="lat-name">DeepSeek TTFT (No-Think)</span>
+                <div class="lat-track"><div class="lat-fill purple" style="width:46%"></div></div>
+                <span class="lat-val">215 ms</span>
+              </div>
+              <div class="lat-row">
+                <span class="lat-name">MiniMax TTS First Chunk</span>
+                <div class="lat-track"><div class="lat-fill amber" style="width:22%"></div></div>
+                <span class="lat-val">82 ms</span>
+              </div>
+            </div>
+            <pre id="udpBenchOutput" class="compact-trace-pre"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 中栏：CHAT & REALTIME DUPLEX TRANSCRIPTION TILE (对标 ChatTile.tsx) ==================== -->
+      <section class="pg-tile pg-col-center">
+        <div class="pg-tile-header">
+          <div class="center-header-left">
+            <span class="pg-tile-title">FULL-DUPLEX VOICE TRANSCRIPTION &amp; TOOL CALL STREAM</span>
+          </div>
+          <div class="scenario-pills-bar">
+            <button class="sc-chip active" data-sc="order">查算力订单 + 60ms 打断改路由</button>
+            <button class="sc-chip" data-sc="bgp">BGP 专线抖动一键切流</button>
+            <button class="sc-chip" data-sc="vip">P1 故障建单 + 转人工 VIP</button>
+          </div>
+        </div>
+
+        <!-- 对话与语音工具调用流 -->
+        <div id="voiceTranscriptStream" class="transcript-stream"></div>
+
+        <!-- 底部语音插话与文本发送框 (ChatMessageInput.tsx 风格) -->
+        <div class="voice-composer-bar">
+          <input id="voiceUtteranceInput" type="text" class="voice-chat-input" value="等一下先别报光模块了！上海骨干网节点丢包严重，马上切到备用低延迟 BGP 路由！" placeholder="输入模拟客户插话内容（发送即触发 60ms 边缘打断 + 语音工具调用 + TTS 播报）..." />
+          <button id="btnSendUtterance" class="pg-btn-send">Send / Barge-In</button>
+        </div>
+      </section>
+
+      <!-- ==================== 右栏：CONFIGURATION, VOICE TOOLS, SKILLS & RPC INSPECTOR (对标 ConfigurationPanelItem.tsx) ==================== -->
+      <section class="pg-tile pg-col-right">
+        <div class="pg-tile-header">
+          <span class="pg-tile-title">CONFIGURATION, TOOLS &amp; SKILLS</span>
+          <span class="mono-tag text-cyan">Hot-Reload</span>
+        </div>
+
+        <div class="pg-tile-body config-scroll">
+          <!-- 1. Voice Function Calling Tools (支持开关与在线新增工具) -->
+          <div class="cfg-block">
+            <div class="cfg-block-header">
+              <span>VOICE FUNCTION TOOLS (MCP / CALLING)</span>
+              <button id="btnToggleAddToolForm" class="btn-xs-outline">+ Add Tool</button>
+            </div>
+
+            <!-- 在线新增语音工具表单 -->
+            <div id="addVoiceToolForm" class="inline-tool-form hidden">
+              <input id="newVoiceToolName" type="text" value="check_ups_battery" placeholder="Tool Name (e.g. check_ups_battery)" />
+              <input id="newVoiceToolDesc" type="text" value="实时查询机房 UPS 蓄电池放电余量与市电恢复倒计时" placeholder="Tool Description" />
+              <div class="inline-form-actions">
+                <button id="btnCancelVoiceTool" class="btn-xs-ghost">Cancel</button>
+                <button id="btnSaveVoiceTool" class="btn-xs-primary">Register Tool</button>
+              </div>
+            </div>
+
+            <div id="voiceToolsContainer" class="cfg-cards-list"></div>
+          </div>
+
+          <!-- 2. Voice Skills (SOP 话术与打断恢复技能开关) -->
+          <div class="cfg-block">
+            <div class="cfg-block-header">
+              <span>VOICE AGENT SKILLS (SOP &amp; BARGE-IN)</span>
+              <span id="skillsActiveCount" class="mono-tag text-emerald">3 Enabled</span>
+            </div>
+            <div id="voiceSkillsContainer" class="cfg-cards-list"></div>
+          </div>
+
+          <!-- 3. Acoustic VAD & Barge-In Parameters + Persona -->
+          <div class="cfg-block">
+            <div class="cfg-block-header">
+              <span>ACOUSTIC VAD &amp; AGENT PERSONA</span>
+            </div>
+            <div class="cfg-form-rows">
+              <div class="slider-row">
+                <div class="slider-label-line">
+                  <span>Edge VAD Energy Threshold (RMS)</span>
+                  <strong id="vadSliderVal" class="text-cyan">1200</strong>
+                </div>
+                <input id="vadRangeInput" type="range" min="400" max="3000" step="50" value="1200" />
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-label-line">
+                  <span>Barge-In Confirm Frames (20ms/frame)</span>
+                  <strong id="framesSliderVal" class="text-emerald">3 frames (60 ms)</strong>
+                </div>
+                <input id="framesRangeInput" type="range" min="1" max="6" step="1" value="3" />
+              </div>
+
+              <label class="cfg-label">TTS Voice Engine
+                <select id="ttsVoiceSelect" class="cfg-input">
+                  <option value="minimax-speech-02-turbo (中文政企女声)">minimax-speech-02-turbo (中文政企女声)</option>
+                  <option value="cosyvoice-2.0-stream (阿里高自然度男声)">cosyvoice-2.0-stream (阿里高自然度男声)</option>
+                  <option value="edge-neural-xiaoxiao (低延迟边缘音色)">edge-neural-xiaoxiao (低延迟边缘音色)</option>
+                </select>
+              </label>
+
+              <label class="cfg-label">System Persona Prompt
+                <textarea id="personaTextarea" class="cfg-textarea" rows="3"></textarea>
+              </label>
+
+              <div class="cfg-row-2">
+                <label class="cfg-label">LLM Model (No-Think)
+                  <input id="voiceLlmModel" type="text" class="cfg-input" value="deepseek-chat" />
+                </label>
+                <label class="cfg-label">API Key (Optional)
+                  <input id="voiceApiKey" type="password" class="cfg-input" placeholder="sk-..." />
+                </label>
+              </div>
+
+              <div class="cfg-save-bar">
+                <span id="voiceCfgSaveHint" class="mono-tag">60ms 物理截断已激活</span>
+                <button id="btnSaveVoiceConfig" class="btn-xs-primary">Apply Settings</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Live RPC / Voice Tool Call Tester (对标 agents-playground RpcPanel.tsx) -->
+          <div class="cfg-block">
+            <div class="cfg-block-header">
+              <span>LIVE RPC / FUNCTION CALL TESTER</span>
+              <span class="mono-tag">JSON-RPC</span>
+            </div>
+            <div class="rpc-row">
+              <select id="rpcToolSelect" class="cfg-input">
+                <option value="query_gpu_order">query_gpu_order</option>
+                <option value="switch_bgp_route">switch_bgp_route</option>
+                <option value="create_noc_ticket">create_noc_ticket</option>
+                <option value="transfer_human_agent">transfer_human_agent</option>
+              </select>
+              <button id="btnCallVoiceRpc" class="btn-xs-primary">Invoke Tool</button>
+            </div>
+            <pre id="rpcToolOutput" class="compact-trace-pre"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FreeSWITCH XML 生产配置弹窗 -->
+    <div id="fsModalBackdrop" class="modal-backdrop hidden">
+      <div class="modal-box">
+        <div class="modal-box-header">
+          <strong>FreeSWITCH 8kHz G.711 Dialplan XML &amp; Production .env</strong>
+          <button id="btnCloseFsModal" class="btn-xs-ghost">Close</button>
+        </div>
+        <pre id="fsDialplanPre" class="modal-pre"></pre>
+        <pre id="fsEnvPre" class="modal-pre"></pre>
       </div>
     </div>
   </div>
