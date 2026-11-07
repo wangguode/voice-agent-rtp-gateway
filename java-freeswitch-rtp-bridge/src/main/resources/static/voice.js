@@ -5,9 +5,11 @@
   let currentScene = "gpu_order";
   let micStream = null;
   let micTimer = null;
+  let currentRms = 1480;
+  let isFlushedState = false;
   const frameLogs = [];
 
-  // 初始化 16 个环形缓冲区槽位
+  // 1. 初始化 16 个环形缓冲区硬件槽位
   const slotsContainer = $("ring-slots");
   for (let i = 0; i < 16; i++) {
     const s = document.createElement("div");
@@ -16,13 +18,61 @@
   }
 
   function renderRingQueue(depth, flushed = false) {
+    isFlushedState = flushed;
     const children = slotsContainer.children;
     for (let i = 0; i < children.length; i++) {
       children[i].className = "ring-slot" + (flushed ? " flushed" : i < depth ? " filled" : "");
     }
     if (flushed) {
-      setTimeout(() => renderRingQueue(0, false), 320);
+      setTimeout(() => renderRingQueue(0, false), 360);
     }
+  }
+
+  // 2. Gemini Live / Apple Siri 级 60fps 声学频谱与声波环 Canvas 渲染器
+  const canvas = $("voice-spectrum-canvas");
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    let phase = 1.45;
+    function drawAcousticSpectrum() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const bars = 48;
+      const barWidth = 5;
+      const gap = (w - bars * barWidth) / (bars + 1);
+      const midY = h / 2 + 8;
+      const normEnergy = Math.min(1, Math.max(0.48, currentRms / 2200));
+
+      for (let i = 0; i < bars; i++) {
+        const distFromCenter = Math.abs(i - bars / 2) / (bars / 2);
+        const envelope = Math.pow(Math.cos(distFromCenter * Math.PI * 0.46), 1.2);
+        const wave =
+          Math.abs(Math.sin(phase + i * 0.42)) * 0.65 +
+          Math.abs(Math.cos(phase * 1.3 - i * 0.27)) * 0.35;
+        const barH = Math.max(6, (h * 0.64) * envelope * normEnergy * (0.28 + 0.72 * wave));
+
+        const x = gap + i * (barWidth + gap);
+        const y = midY - barH / 2;
+
+        const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+        if (isFlushedState) {
+          grad.addColorStop(0, "#fb7185");
+          grad.addColorStop(1, "#e11d48");
+        } else {
+          grad.addColorStop(0, "#22d3ee");
+          grad.addColorStop(0.5, "#3b82f6");
+          grad.addColorStop(1, "#10b981");
+        }
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, barH, 2.5);
+        ctx.fill();
+      }
+      phase += 0.085;
+      requestAnimationFrame(drawAcousticSpectrum);
+    }
+    drawAcousticSpectrum();
   }
 
   function logWsFrame(direction, payload) {
@@ -52,7 +102,18 @@
     const html = document.documentElement;
     const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
     html.setAttribute("data-theme", next);
-    $("btn-theme").textContent = next === "dark" ? "亮色模式" : "暗色模式";
+    $("btn-theme").textContent = next === "dark" ? "亮色模式" : "暗黑模式";
+  });
+
+  // 顶部导航与右侧 Tab 联动
+  document.querySelectorAll("[data-open-drawer]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".nav-link").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.getAttribute("data-open-drawer");
+      const tab = document.querySelector(`.drawer-tab[data-tab="${target}"]`);
+      if (tab) tab.click();
+    });
   });
 
   document.querySelectorAll(".drawer-tab").forEach((tab) => {
@@ -92,6 +153,9 @@
       const msg = JSON.parse(ev.data);
       logWsFrame("<-", msg);
       if (msg.state) $("call-state").textContent = msg.state;
+      if (typeof msg.inboundRms === "number") {
+        currentRms = Math.max(400, msg.inboundRms);
+      }
 
       if (msg.type === "TELEMETRY") {
         $("queue-depth-text").textContent = `积压: ${msg.outboundQueue} 帧 | 上行 RMS: ${msg.inboundRms}`;
@@ -119,6 +183,7 @@
         renderRingQueue(msg.outboundQueue);
       } else if (msg.type === "BARGE_IN_CLEAR") {
         stopBrowserTts();
+        currentRms = 3200;
         $("kpi-barge-ms").textContent = `${msg.confirmMs} ms`;
         $("kpi-clear-ms").textContent = `${msg.clearSignalMs} ms`;
         $("kpi-dropped").textContent = `${msg.droppedFrames} 帧`;
@@ -211,13 +276,14 @@
         let sum = 0;
         for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
         const rms = Math.round(Math.sqrt(sum / buf.length) * 32767);
+        currentRms = Math.max(300, rms);
         $("queue-depth-text").textContent = `麦克风实时 RMS: ${rms}`;
         if (ws && ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify({ action: "mic_rms", rms }));
         }
       }, 25);
     } catch (err) {
-      alert("当前环境未授权麦克风，可直接使用下方插话输入框或「立即插话打断」按钮测试！");
+      alert("当前环境未授权麦克风，可直接使用下方插话输入框或「立即触发 60ms Barge-in」按钮测试！");
     }
   });
 
@@ -233,9 +299,9 @@
     $("v-cfg-frames").value = ov.bargeInConfirmFrames;
 
     $("bench-summary").innerHTML = `
-      <div class="b-card"><span>UDP 端口</span><strong>:${bench.udpLocalPort}</strong></div>
-      <div class="b-card"><span>丢弃旧帧</span><strong>${bench.droppedOutboundFrames} 帧</strong></div>
-      <div class="b-card"><span>回路耗时</span><strong>${bench.totalSocketRoundtripMs} ms</strong></div>
+      <div class="b-card"><span>UDP Port</span><strong>:${bench.udpLocalPort}</strong></div>
+      <div class="b-card"><span>Purged RTP</span><strong>${bench.droppedOutboundFrames} 帧</strong></div>
+      <div class="b-card"><span>Loopback RTT</span><strong>${bench.totalSocketRoundtripMs} ms</strong></div>
     `;
 
     $("packet-list").innerHTML = (bench.traces || [])
@@ -244,7 +310,7 @@
       <div class="pkt-row ${t.bargeInTriggered ? "barge" : ""}">
         <span>SEQ #${t.seq} (ts=${t.timestamp})</span>
         <span>RMS=${t.rms}</span>
-        <span>${t.bargeInTriggered ? "BARGE-IN FLUSH" : t.voiceActive ? "VOICE_ACTIVE" : "SILENCE"}</span>
+        <span>${t.bargeInTriggered ? "⚡ BARGE-IN FLUSH" : t.voiceActive ? "VOICE_ACTIVE" : "SILENCE"}</span>
       </div>`
       )
       .join("");
@@ -287,21 +353,21 @@
   });
 
   // 首屏同步预渲染完整 5 步双轮打断实录
-  appendDialogue("user", "主叫用户 · SenseVoice ASR 46ms", "你好，帮我查一下昨天开通的杭州区 GPU 云服务器订单进度。");
-  appendDialogue("bot", "AI 语音客服 · 首包 TTFB=76.4ms", "您好，我是智能语音客服。已为您查到杭州区 GPU 实例订单尾号八八六 [已由边缘打断瞬时截断]");
+  appendDialogue("user", "CALLER INBOUND · SenseVoice Streaming ASR (46ms)", "你好，帮我查一下昨天开通的杭州区 GPU 云服务器订单进度。");
+  appendDialogue("bot", "ANTIGRAVITY VOICE AGENT · CosyVoice TTFB=76.4ms", "您好，我是智能语音客服。已为您查到杭州区 GPU 实例订单尾号八八六 [已由边缘打断瞬时截断]");
   appendDialogue(
     "barge",
-    "BARGE-IN INTERRUPT · 确认=60ms | 信令清空=0.16ms | 丢弃未播报 RTP=12帧",
-    '向 FreeSWITCH 下发控制指令: {"event":"clearAudio","callUuid":"fs-call-886","reason":"edge_vad_60ms"}'
+    "⚡ EDGE BARGE-IN INTERRUPT · Confirm=60ms | clearAudio=0.16ms | Purged=12 RTP Frames",
+    'FreeSWITCH ESL Command -> {"event":"clearAudio","callUuid":"fs-call-886","reason":"edge_vad_60ms"}'
   );
   appendDialogue(
     "barge",
-    "用户实时插话 (Barge-in Utterance) · SenseVoice ASR 42ms",
+    "CALLER BARGE-IN UTTERANCE · SenseVoice ASR (42ms)",
     "不用等分发了，我现在急用，直接帮我切换到现货可用区或者转专属架构师！"
   );
   appendDialogue(
     "bot",
-    "AI 语音客服 (打断后无缝响应) · TTFB=72.1ms",
+    "ANTIGRAVITY VOICE AGENT (Re-routed) · TTFB=72.1ms",
     "明白，已立即中止原播报！上海二区当前有现货 A100 实例，我现在为您一键热迁移并同步接通值班架构师。"
   );
   renderRingQueue(6);

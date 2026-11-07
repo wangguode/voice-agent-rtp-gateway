@@ -1,251 +1,331 @@
-<!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<!doctype html>
+<html lang="zh-CN" data-theme="dark" data-view="showcase">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WG Voice Live Studio — 企业级实时语音智能体网关工作台</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WG Antigravity · Voice Live Console — Enterprise Full-Duplex SIP/RTP Gateway</title>
+  
+  
+  
   <link rel="stylesheet" href="/voice.css" />
 </head>
 <body>
-  <div class="workspace-shell">
-    <!-- 左侧栏：Gemini Live 风格话路会话与音频栈导航 -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <div class="brand-logo" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-            <line x1="4" y1="9" x2="4" y2="15" stroke="#EA580C" stroke-width="2.4" stroke-linecap="round"/>
-            <line x1="8" y1="5" x2="8" y2="19" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
-            <line x1="12" y1="3" x2="12" y2="21" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"/>
-            <line x1="16" y1="6" x2="16" y2="18" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
-            <line x1="20" y1="10" x2="20" y2="14" stroke="#EA580C" stroke-width="2.4" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="brand-titles">
-          <span class="brand-name">WG Voice Live Studio</span>
-          <span class="brand-sub">FreeSWITCH RTP · Pipecat 2.0</span>
-        </div>
-      </div>
-
-      <button class="new-call-btn" id="btn-start-call" type="button">
-        <svg viewBox="0 0 20 20" width="15" height="15" fill="currentColor">
-          <path d="M5 4l11 6-11 6V4z"/>
-        </svg>
-        <span>启动全双工来电与自动打断</span>
-      </button>
-
-      <div class="sidebar-section">
-        <div class="sidebar-heading">实时话路场景 (SIP Call Sessions)</div>
-        <div class="session-list" id="scene-list">
-          <button class="session-item active" data-scene="gpu_order" type="button">
-            <span class="session-dot orange"></span>
-            <div class="session-meta">
-              <div class="session-title">杭州区 GPU 实例加急与插话转接</div>
-              <div class="session-desc">8kHz G.711 · 60ms 边缘打断实录</div>
-            </div>
-          </button>
-          <button class="session-item" data-scene="billing" type="button">
-            <span class="session-dot blue"></span>
-            <div class="session-meta">
-              <div class="session-title">企业并发账单核查与阈值锁定</div>
-              <div class="session-desc">SenseVoice ASR · 毫秒级队列清空</div>
-            </div>
-          </button>
-          <button class="session-item" data-scene="incident" type="button">
-            <span class="session-dot green"></span>
-            <div class="session-meta">
-              <div class="session-title">华东 SIP 中继单通故障秒级切流</div>
-              <div class="session-desc">NOC 应急语音指令 · BGP 热备切换</div>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-heading">全双工音频链路 (Audio Pipeline)</div>
-        <div class="pipe-stack">
-          <div class="pipe-card">
-            <div class="p-top"><span>PSTN / FreeSWITCH</span><span class="p-tag">8kHz G.711</span></div>
-            <div class="p-sub">RFC 3550 UDP RTP · 20ms/帧 (160B)</div>
-          </div>
-          <div class="pipe-card">
-            <div class="p-top"><span>SOXR VHQ 重采样</span><span class="p-tag">8k ⇄ 16kHz</span></div>
-            <div class="p-sub">跨帧连续滤波器相位 · 零边界爆音</div>
-          </div>
-          <div class="pipe-card">
-            <div class="p-top"><span>阿里 SenseVoice + VAD</span><span class="p-tag">≤ 60ms 确认</span></div>
-            <div class="p-sub">连续 3 帧 RMS ≥ 1200 瞬时触发打断</div>
-          </div>
-          <div class="pipe-card">
-            <div class="p-top"><span>DeepSeek + MiniMax</span><span class="p-tag">Thinking=Off</span></div>
-            <div class="p-sub">首包 TTFB 76.4ms · 0.16ms clearAudio</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="engine-status">
-          <span class="status-dot"></span>
-          <span id="mode-label">local-gateway · deepseek-chat</span>
-        </div>
-        <button class="settings-btn" id="btn-open-settings" type="button">
-          <span>VAD 阈值与大模型 API 设置</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- 中央主舞台：死亡三角 KPI + 16 槽位环形队列 + Gemini Live 对话流 + 底部插话台 -->
-    <main class="voice-stage">
-      <header class="stage-topbar">
-        <div class="topbar-left">
-          <span class="state-pill" id="call-state">WS_READY · BARGE-IN ARMED</span>
-          <button class="topbar-btn danger-outline" id="btn-manual-barge" type="button">立即插话打断 (Barge-in)</button>
-          <button class="topbar-btn" id="btn-mic-toggle" type="button">开启麦克风 VAD 实测</button>
-        </div>
-        <div class="topbar-right">
-          <label class="tts-toggle">
-            <input type="checkbox" id="chk-browser-tts" />
-            <span>浏览器语音朗读</span>
-          </label>
-          <button class="topbar-btn" id="btn-theme" type="button">暗色模式</button>
-        </div>
-      </header>
-
-      <!-- 语音交互“死亡三角” 4 大核心指标条 -->
-      <section class="kpi-strip">
-        <div class="kpi-cell highlight">
-          <span class="kpi-label">边缘 VAD 打断确认耗时</span>
-          <strong class="kpi-val" id="kpi-barge-ms">60 ms</strong>
-          <span class="kpi-sub">连续 3 帧 (20ms/帧) RMS ≥ 1200</span>
-        </div>
-        <div class="kpi-cell">
-          <span class="kpi-label">下行流式 TTS 首包 (TTFB)</span>
-          <strong class="kpi-val" id="kpi-ttfb">76.4 ms</strong>
-          <span class="kpi-sub">DeepSeek Thinking=Disabled</span>
-        </div>
-        <div class="kpi-cell">
-          <span class="kpi-label">clearAudio 队列清空信令</span>
-          <strong class="kpi-val" id="kpi-clear-ms">0.16 ms</strong>
-          <span class="kpi-sub">原子重置环形指针（零残留自言自语）</span>
-        </div>
-        <div class="kpi-cell">
-          <span class="kpi-label">最近打断丢弃积压 RTP 帧</span>
-          <strong class="kpi-val" id="kpi-dropped">12 帧</strong>
-          <span class="kpi-sub">约合 240ms 未播报陈旧语音</span>
-        </div>
-      </section>
-
-      <!-- 16 槽位 FreeSWITCH 8kHz RTP 发送环形缓冲队列可视化 -->
-      <section class="ring-visualizer">
-        <div class="ring-head">
-          <span>下行 FreeSWITCH 8kHz RTP 发送环形缓冲队列 (16 槽位实时状态)</span>
-          <span class="ring-telemetry" id="queue-depth-text">积压: 6 帧 | 上行 RMS: 60</span>
-        </div>
-        <div class="ring-slots" id="ring-slots"></div>
-      </section>
-
-      <!-- Gemini Live + Codex 风格全双工对话流 -->
-      <section class="dialogue-stream" id="dialogue-list" aria-live="polite"></section>
-
-      <!-- 底部 Gemini 风格语音/文本实时插话输入框 -->
-      <footer class="composer-dock">
-        <div class="composer-box">
-          <input
-            id="barge-input"
-            type="text"
-            placeholder="输入任意一句话模拟用户实时插话（如：不用查物流了，直接帮我切到现货可用区并转人工客服！）..."
-          />
-          <button class="send-barge-btn" id="btn-send-barge" type="button">
-            <span>插话打断并发送</span>
-          </button>
-        </div>
-      </footer>
-    </main>
-
-    <!-- 右侧抽屉：UDP Socket 真实压测器 + FreeSWITCH 生产配置 + 信令日志 -->
-    <aside class="inspector-drawer">
-      <div class="drawer-tabs" role="tablist">
-        <button class="drawer-tab active" data-tab="tab-udp" type="button">UDP RTP 压测</button>
-        <button class="drawer-tab" data-tab="tab-fs-xml" type="button">FreeSWITCH 配置</button>
-        <button class="drawer-tab" data-tab="tab-ws-log" type="button">信令帧监控</button>
-      </div>
-
-      <!-- Tab 1: RFC 3550 UDP Socket 真实回路压测 -->
-      <div class="drawer-pane active" id="tab-udp">
-        <div class="pane-header">
-          <div>
-            <h2>RFC 3550 UDP Socket 真实回路压测</h2>
-            <p>本机拉起真实 DatagramSocket 发送 8 个 20ms RTP 包实测边缘打断</p>
-          </div>
-          <button class="mini-btn primary" id="btn-udp-bench" type="button">运行压测</button>
-        </div>
-        <div class="bench-summary" id="bench-summary"></div>
-        <div class="sub-label">逐包 RTP 解包与 VAD 打断轨迹</div>
-        <div class="packet-list" id="packet-list"></div>
-        <div class="sub-label">原始压测回执 JSON</div>
-        <pre class="code-panel" id="udp-output"></pre>
-      </div>
-
-      <!-- Tab 2: FreeSWITCH 生产环境对接配置 -->
-      <div class="drawer-pane" id="tab-fs-xml">
-        <div class="pane-header">
-          <div>
-            <h2>FreeSWITCH 生产接入配置模板</h2>
-            <p>可直接复制到企业 FreeSWITCH 拨号计划与网关环境变量</p>
-          </div>
-          <button class="mini-btn" id="btn-copy-xml" type="button">复制 XML</button>
-        </div>
-        <div class="sub-label">conf/dialplan/default/99_wg_voice_agent.xml</div>
-        <pre class="code-panel" id="fs-xml-box"></pre>
-        <div class="sub-label">.env 生产云端模式配置</div>
-        <pre class="code-panel" id="fs-env-box"></pre>
-      </div>
-
-      <!-- Tab 3: 实时 WebSocket 控制信令日志 -->
-      <div class="drawer-pane" id="tab-ws-log">
-        <div class="pane-header">
-          <div>
-            <h2>FreeSWITCH ⇄ Gateway 实时信令帧</h2>
-            <p>记录每次 clearAudio 清空指令与 ASR/TTS 状态帧</p>
-          </div>
-        </div>
-        <pre class="code-panel tall" id="ws-frame-log"></pre>
-      </div>
-    </aside>
+  <!-- 背景极光流光层 -->
+  <div class="agy-ambient-aurora" aria-hidden="true">
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-blue"></div>
+    <div class="orb orb-rose"></div>
+    <div class="grid-mesh"></div>
   </div>
 
-  <!-- 语音网关参数与大模型 API Key 设置弹窗 -->
-  <div class="modal-backdrop hidden" id="voice-settings-modal">
-    <div class="modal-card" role="dialog" aria-labelledby="v-modal-title">
+  <!-- 1. 顶部 Google Antigravity / Apple 级毛玻璃导航栏 -->
+  <header class="agy-site-header">
+    <div class="header-inner">
+      <div class="brand-cluster">
+        <a href="#" class="agy-logo-link" title="WG Antigravity · Voice Live Console">
+          <svg class="agy-mark-svg" viewBox="0 0 210 200" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="agy-voice-grad" x1="15" y1="20" x2="190" y2="185" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#06B6D4"/>
+                <stop offset="45%" stop-color="#3B82F6"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </linearGradient>
+            </defs>
+            <path d="M175.277 181.636C185.19 189.071 200.06 184.115 186.429 170.484C145.536 130.83 154.211 21.7824 103.404 21.7824C52.5979 21.7824 61.2722 130.83 20.3793 170.484C5.50915 185.354 21.6185 189.071 31.5319 181.636C69.9464 155.614 67.4681 109.764 103.404 109.764C139.34 109.764 136.862 155.614 175.277 181.636Z" fill="url(#agy-voice-grad)"/>
+          </svg>
+          <span class="brand-wordmark">Antigravity</span>
+          <span class="brand-divider">/</span>
+          <span class="brand-sub">Voice Live Console</span>
+        </a>
+        <span class="version-pill">RFC 3550 UDP · 8kHz PCMU · 60ms Barge-in</span>
+      </div>
+
+      <nav class="site-nav" aria-label="语音网关导航">
+        <button class="nav-link active" data-open-drawer="tab-udp" type="button">UDP Socket Loopback</button>
+        <button class="nav-link" data-open-drawer="tab-fs" type="button">FreeSWITCH Dialplan</button>
+        <button class="nav-link" data-open-drawer="tab-ws" type="button">WebSocket Wire Log</button>
+      </nav>
+
+      <div class="header-actions">
+        <div class="live-telemetry-pill">
+          <span class="status-dot"></span>
+          <span id="call-state" class="mono-num">WS_READY · BARGE-IN ARMED</span>
+          <span class="sep">·</span>
+          <span id="mode-label">DETERMINISTIC_VOICE_ENGINE</span>
+        </div>
+
+        <button id="btn-mic-toggle" class="hdr-btn" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          <span>开启麦克风 VAD 实测</span>
+        </button>
+
+        <button id="btn-theme" class="hdr-btn" type="button">亮色模式</button>
+
+        <button id="btn-open-settings" class="hdr-btn primary-cta" type="button">
+          <span>配置 VAD &amp; LLM Key</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. 官网旗舰 Hero 头部 + 4 大硬核实时遥测 KPI 胶囊 -->
+  <section class="agy-hero-banner">
+    <div class="hero-content">
+      <div class="hero-top-split">
+        <div>
+          <div class="announcement-pill">
+            <span class="sparkle-dot"></span>
+            <span>Enterprise Full-Duplex SIP/RTP Voice Agent Gateway · Sub-200ms End-to-End</span>
+          </div>
+          <h1 class="hero-headline">
+            Voice mode in <span class="gradient-text">Antigravity</span> with 60ms edge barge-in.
+          </h1>
+          <p class="hero-subhead">
+            基于 FreeSWITCH 双轨放音 + 20ms G.711 RTP 环形缓冲区 + 连续 3 帧边缘 VAD 状态机，0.16ms 下发 <code>clearAudio</code> 截断旧播报并无缝重路由大模型。
+          </p>
+        </div>
+
+        <!-- 右侧 4 个硬件级声学遥测仪表 -->
+        <div class="hero-kpi-strip">
+          <div class="telemetry-card">
+            <span class="t-lbl">EDGE VAD CONFIRM</span>
+            <strong id="kpi-barge-ms" class="t-val cyan">60 ms</strong>
+            <span class="t-sub">3 frames × 20ms</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="t-lbl">CLEARAUDIO SIGNAL</span>
+            <strong id="kpi-clear-ms" class="t-val emerald">0.16 ms</strong>
+            <span class="t-sub">Lock-free flush</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="t-lbl">FIRST AUDIO TTFB</span>
+            <strong id="kpi-ttfb" class="t-val blue">76.4 ms</strong>
+            <span class="t-sub">Streaming CosyVoice</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="t-lbl">DROPPED STALE RTP</span>
+            <strong id="kpi-dropped" class="t-val rose">12 帧</strong>
+            <span class="t-sub">Instant ring purge</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 核心：1:1 复刻 Gemini Live / Antigravity Voice 桌面仿真控制台 -->
+  <main class="agy-ide-stage">
+    <div class="ide-window-frame">
+      <!-- 3.1 macOS 原生窗口标题栏 -->
+      <div class="ide-titlebar">
+        <div class="window-traffic-lights" aria-hidden="true">
+          <span class="tl tl-close"></span>
+          <span class="tl tl-min"></span>
+          <span class="tl tl-max"></span>
+        </div>
+
+        <div class="ide-command-center">
+          <span>SIP/2.0 Trunk: fs-hangzhou-core-01 · Codec: PCMU/8000 (160B/20ms)</span>
+        </div>
+
+        <div class="ide-titlebar-right">
+          <label class="tts-toggle-label">
+            <input id="chk-browser-tts" type="checkbox" checked />
+            <span>浏览器中文语音合成伴音</span>
+          </label>
+          <button id="btn-start-call" class="ide-mini-btn" type="button">▶ 重播全双工打断演练</button>
+        </div>
+      </div>
+
+      <!-- 3.2 三栏主体：左侧 SIP 话路场景栏 (256px) | 中央 60fps 声波频谱仪 + RTP 矩阵 + 双工对话流 (1fr) | 右侧 UDP 压测 & FreeSWITCH 配置器 (430px) -->
+      <div class="voice-workbench">
+        <!-- A. 左侧 SIP/RTP 话路中继与场景列表 -->
+        <aside class="ide-sidebar">
+          <div class="sidebar-group">
+            <div class="sidebar-hdr">
+              <span>SIP/RTP LIVE SCENARIOS</span>
+              <span class="badge-mini">3 Trunks</span>
+            </div>
+            <div class="session-list">
+              <button class="session-item active" data-scene="gpu_order" type="button">
+                <span class="s-icon cyan">●</span>
+                <div class="s-body">
+                  <div class="s-title">01 · 云服务器订单查询 + 60ms 插话改派</div>
+                  <div class="s-meta">自动演示播报中被客户打断转架构师</div>
+                </div>
+              </button>
+              <button class="session-item" data-scene="fault_noc" type="button">
+                <span class="s-icon amber">●</span>
+                <div class="s-body">
+                  <div class="s-title">02 · 机房 BGP 抖动告警 + 抢话切流</div>
+                  <div class="s-meta">播报长SOP时值班总监插话直接切流</div>
+                </div>
+              </button>
+              <button class="session-item" data-scene="vip_Dynamic" type="button">
+                <span class="s-icon emerald">●</span>
+                <div class="s-body">
+                  <div class="s-title">03 · 自由话术 / 麦克风实时打断沙箱</div>
+                  <div class="s-meta">随时输入任意文本或对着麦克风说话</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="sidebar-group grow">
+            <div class="sidebar-hdr">
+              <span>DUAL-TRACK ARCHITECTURE</span>
+            </div>
+            <div class="arch-spec-list">
+              <div class="spec-item">
+                <strong>Track A · Background Ambient</strong>
+                <span>FreeSWITCH <code>local_stream://comfort_noise</code> 持续垫音，消除静默挂断错觉。</span>
+              </div>
+              <div class="spec-item">
+                <strong>Track B · Foreground AI TTS</strong>
+                <span>20ms RTP 环形队列推流，收到 <code>clearAudio</code> 信号后 0.16ms 原地清空。</span>
+              </div>
+              <div class="spec-item">
+                <strong>Edge VAD · 3-Frame Confirm</strong>
+                <span>RMS &gt; 900 连续命中 3 帧 (60ms) 立即触发边缘截断，无需等待云端 ASR。</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- B. 中央：Gemini Live / Apple Siri 级 60fps 流体声学频谱可视化舱 + 16 槽位 RTP 硬件矩阵 + 全双工实时转录流 -->
+        <section class="voice-center-stage">
+          <!-- B1. 声学频谱可视化仪 + 16 槽位 RTP Ring Buffer 矩阵 -->
+          <div class="acoustic-visualizer-deck">
+            <div class="visualizer-canvas-wrap">
+              <canvas id="voice-spectrum-canvas" width="520" height="92" aria-label="60fps 实时声学频谱与声波环"></canvas>
+              <div class="visualizer-overlay-meta">
+                <span class="v-tag">GEMINI LIVE ACOUSTIC ENGINE · 8000Hz PCM16</span>
+                <span id="queue-depth-text" class="v-rms">积压: 6 帧 | 上行 RMS: 2380</span>
+              </div>
+            </div>
+
+            <div class="rtp-ring-hardware-box">
+              <div class="ring-box-hdr">
+                <span>OUTBOUND RTP RING BUFFER (16 SLOTS × 20MS = 320MS WINDOW)</span>
+                <span class="ring-legend"><i class="lg-dot filled"></i>Active Frame <i class="lg-dot flushed"></i>Flushed</span>
+              </div>
+              <div id="ring-slots" class="ring-slots-grid" aria-label="16槽位RTP下行环形队列"></div>
+            </div>
+          </div>
+
+          <!-- B2. 全双工实时语音转录与 Barge-in 截断对话舞台 -->
+          <div id="dialogue-list" class="voice-dialogue-stream" role="log" aria-live="polite"></div>
+
+          <!-- B3. 底部实时语音插话与强制 Barge-in 发射舱 -->
+          <div class="agy-composer-shell voice-composer">
+            <div class="composer-context-bar">
+              <span class="ctx-chip cyan">⚡ Edge VAD Threshold: 900 RMS</span>
+              <span class="ctx-chip">SenseVoice-Small Streaming ASR</span>
+              <span class="ctx-chip">CosyVoice 2.0 Zero-Shot TTS</span>
+            </div>
+            <div class="voice-input-row">
+              <input
+                id="barge-input"
+                class="voice-text-input"
+                type="text"
+                placeholder="输入任意插话内容（如：不用念单号了，直接帮我切到上海二区现货实例！）按 Enter 立即触发 60ms 打断..."
+                aria-label="输入实时插话内容"
+              />
+              <button id="btn-manual-barge" class="voice-barge-btn danger" type="button">
+                <span>⚡ 立即触发 60ms Barge-in</span>
+              </button>
+              <button id="btn-send-barge" class="voice-barge-btn primary" type="button">
+                <span>发送插话并重路由</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- C. 右侧：RFC 3550 UDP Socket 真实回路压测 & FreeSWITCH 生产拨号计划配置器 -->
+        <aside class="voice-inspector-pane">
+          <div class="bottom-panel-tabs">
+            <button class="drawer-tab active" data-tab="tab-udp" type="button">
+              <span class="tab-dot cyan"></span>
+              <span>UDP RTP 压测</span>
+            </button>
+            <button class="drawer-tab" data-tab="tab-fs" type="button">
+              <span class="tab-dot emerald"></span>
+              <span>FreeSWITCH XML</span>
+            </button>
+            <button class="drawer-tab" data-tab="tab-ws" type="button">
+              <span class="tab-dot blue"></span>
+              <span>WS 信令帧日志</span>
+            </button>
+          </div>
+
+          <div class="inspector-body">
+            <!-- Tab 1: 真实 Java DatagramSocket RFC 3550 压测 -->
+            <div id="tab-udp" class="drawer-pane active">
+              <div class="console-head-row">
+                <span class="console-title">RFC 3550 UDP Socket Loopback Benchmark</span>
+                <button id="btn-udp-bench" class="console-action-btn" type="button">启动 UDP 压测</button>
+              </div>
+              <p class="console-hint">在本地 JVM 启动真实 <code>DatagramSocket</code> 发送 172B G.711 PCMU 数据包并注入高能量语音帧验证截断。</p>
+              <div id="bench-summary" class="bench-kpi-grid"></div>
+              <div class="code-box-label">RTP Packet Sequence &amp; VAD State Trace</div>
+              <div id="packet-list" class="packet-trace-list"></div>
+              <div class="code-box-label">Raw Benchmark JSON Telemetry</div>
+              <pre id="udp-output" class="terminal-pre"></pre>
+            </div>
+
+            <!-- Tab 2: FreeSWITCH 生产拨号计划导出 -->
+            <div id="tab-fs" class="drawer-pane">
+              <div class="console-head-row">
+                <span class="console-title">FreeSWITCH conf/dialplan/default.xml</span>
+                <button id="btn-copy-xml" class="console-action-btn" type="button">复制 XML</button>
+              </div>
+              <pre id="fs-xml-box" class="terminal-pre tall"></pre>
+              <div class="code-box-label">Production .env Template</div>
+              <pre id="fs-env-box" class="terminal-pre"></pre>
+            </div>
+
+            <!-- Tab 3: WebSocket 实时信令帧 -->
+            <div id="tab-ws" class="drawer-pane">
+              <div class="console-head-row">
+                <span class="console-title">/ws/voice-console Bidirectional Frames</span>
+              </div>
+              <pre id="ws-frame-log" class="terminal-pre full-height"></pre>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- 4. VAD 阈值与大模型 API Key 在线热更新弹窗 -->
+  <div id="voice-settings-modal" class="agy-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="v-modal-title">
+    <div class="agy-dls-card">
       <div class="modal-header">
-        <h2 id="v-modal-title">边缘 VAD 参数与云端大模型设置</h2>
-        <button class="close-btn" id="btn-close-settings" type="button">✕</button>
+        <div>
+          <div class="modal-eyebrow">ACOUSTIC VAD &amp; LLM SETTINGS</div>
+          <h2 id="v-modal-title" class="modal-title">在线热更新边缘 VAD 阈值与大模型 Key</h2>
+        </div>
+        <button id="btn-close-settings" class="modal-close-circle" type="button" aria-label="关闭">✕</button>
       </div>
-      <p class="modal-desc">
-        支持动态调整边缘 RMS 能量阈值与确认帧数，或填入 DeepSeek / 通义千问 API Key 开启真实大模型语音对话。
-      </p>
-      <div class="form-group">
-        <label for="v-cfg-rms">VAD 人声触发能量阈值 (RMS)</label>
-        <input id="v-cfg-rms" type="number" value="1200" />
+      <div class="modal-body">
+        <label class="field-label">边缘 VAD 能量阈值 (RMS Threshold, 默认 900)
+          <input id="v-cfg-rms" class="ide-input full" type="number" value="900" />
+        </label>
+        <label class="field-label">连续激活确认帧数 (Frames × 20ms, 默认 3 帧 = 60ms)
+          <input id="v-cfg-frames" class="ide-input full" type="number" value="3" />
+        </label>
+        <label class="field-label">OpenAI / DeepSeek / Qwen 兼容 Base URL
+          <input id="v-cfg-baseurl" class="ide-input full" type="text" value="https://api.deepseek.com/v1" />
+        </label>
+        <label class="field-label">模型名称 (Model ID)
+          <input id="v-cfg-model" class="ide-input full" type="text" value="deepseek-chat" />
+        </label>
+        <label class="field-label">API Key（配置后自动切换为 LIVE_LLM 真实流式回复）
+          <input id="v-cfg-apikey" class="ide-input full" type="password" placeholder="sk-..." />
+        </label>
       </div>
-      <div class="form-group">
-        <label for="v-cfg-frames">连续确认帧数 (每帧 20ms，3 帧 = 60ms)</label>
-        <input id="v-cfg-frames" type="number" value="3" />
-      </div>
-      <div class="form-group">
-        <label for="v-cfg-baseurl">OpenAI 兼容 Base URL</label>
-        <input id="v-cfg-baseurl" type="text" value="https://api.deepseek.com/v1" />
-      </div>
-      <div class="form-group">
-        <label for="v-cfg-model">模型名称 (Model ID)</label>
-        <input id="v-cfg-model" type="text" value="deepseek-chat" />
-      </div>
-      <div class="form-group">
-        <label for="v-cfg-apikey">API Key (可选，填入后自动切换云端实时生成)</label>
-        <input id="v-cfg-apikey" type="password" placeholder="sk-..." />
-      </div>
-      <div class="modal-actions">
-        <button class="mini-btn" id="btn-cancel-settings" type="button">取消</button>
-        <button class="mini-btn primary" id="btn-save-settings" type="button">保存配置</button>
+      <div class="modal-footer">
+        <button id="btn-cancel-settings" class="hdr-btn" type="button">取消</button>
+        <button id="btn-save-settings" class="hdr-btn primary-cta" type="button">保存并实时生效</button>
       </div>
     </div>
   </div>
