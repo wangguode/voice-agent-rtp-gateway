@@ -53,28 +53,32 @@
 
 ---
 
-## 一、Java 17 + Spring Boot 3 实时语音智能体工作台 (`WG Voice Agent Playground`)
+## 一、Java 17 + Spring Boot 3 实时语音智能体工作台 (`Voice Agent · RTP Gateway`)
 
-针对 Java 后端与通信网关研发团队，`java-freeswitch-rtp-bridge/` 模块基于 **Java 17 + Spring Boot 3.3.5 + WebSocket + RFC 3550 UDP Socket** 提供了工业级三栏实时语音智能体工作台（`WG Voice Agent Playground`，包名 `com.wangguoai.voice.gateway`），支持在线开关与新增语音 Function Calling 工具、配置语音 SOP 技能、调节边缘 VAD 阈值及 FreeSWITCH 8kHz G.711 毫秒级打断演练：
+针对 Java 后端与通信网关研发团队，`java-freeswitch-rtp-bridge/`、`web-ui/` 与 `desktop-shell/` 模块基于 **Java 17 + Spring Boot 3.3.5 + Next.js/React + RFC 3550 UDP Socket + Electron (macOS / Windows)** 提供了生产级实时语音智能体工作台（`Voice Agent · RTP Gateway`，包名 `com.wangguoai.voice.gateway`），支持语音问答自动调用 Function Calling 工具、注入语音 SOP 技能、配置云端大模型（DeepSeek / 通义千问 / OpenAI 兼容接口）及 FreeSWITCH 8kHz G.711 60ms 毫秒级打断演练：
 
 <p align="center">
-  <img alt="WG Voice Agent Playground Preview" src="./docs/assets/voice-console-preview.png" width="100%">
+  <img alt="Voice Agent RTP Gateway Preview" src="./docs/assets/voice-console-preview.png" width="100%">
 </p>
 
-### 30 秒跨平台一键启动（支持 macOS / Windows / Linux）
+### 30 秒跨平台启动 & 桌面端打包（兼容 macOS `.dmg` / Windows `.exe`）
 
 ```bash
 git clone https://github.com/wangguode/voice-agent-rtp-gateway.git
 cd voice-agent-rtp-gateway
 
-# 方式 A：macOS / Linux 一键启动（默认监听 http://127.0.0.1:8091）
+# 方式 A：macOS / Linux 一键启动 Web 工作台（默认监听 http://127.0.0.1:8091）
 ./start-mac-linux.sh
 
-# 方式 B：Windows 10/11 一键启动（CMD / PowerShell）
+# 方式 B：Windows 10/11 一键启动 Web 工作台（CMD / PowerShell）
 start-windows.bat
 
-# 方式 C：Maven 标准测试与启动
-cd java-freeswitch-rtp-bridge && mvn test && mvn spring-boot:run
+# 方式 C：启动或打包独立桌面客户端 (支持 macOS Apple Silicon/Intel .dmg 与 Windows .exe)
+cd desktop-shell
+npm install
+npm start            # 直接拉起内嵌 Java 17 语音网关的独立桌面窗口
+npm run build:mac    # 打包 macOS 桌面安装包 (dist/*.dmg, dist/*.zip)
+npm run build:win    # 打包 Windows 桌面安装包 (dist/*.exe NSIS & Portable)
 ```
 
 打开浏览器访问 **`http://localhost:8091`** 即可体验：

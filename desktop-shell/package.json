@@ -1,0 +1,35 @@
+{
+  "name": "@wangguode/voice-agent-desktop",
+  "version": "0.5.0",
+  "description": "Voice Agent RTP Gateway Cross-Platform Desktop App for macOS (.dmg/.app) and Windows (.exe)",
+  "main": "main.js",
+  "type": "module",
+  "author": "王果 (wangguode)",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac --x64 --arm64",
+    "build:win": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.wangguoai.voice.desktop",
+    "productName": "Voice Agent",
+    "extraResources": [
+      {
+        "from": "../java-freeswitch-rtp-bridge/target/freeswitch-rtp-bridge-0.3.0.jar",
+        "to": "backend/voice-agent.jar"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  }
+}
