@@ -1,114 +1,268 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 1040 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="voice-arch-light-title voice-arch-light-desc" id="voice-arch-light-root">
-        <title id="voice-arch-light-title">企业级实时语音智能体网关架构图</title>
-        <desc id="voice-arch-light-desc">展示 FreeSWITCH 8kHz RTP 与 Java Spring Boot / Pipecat 全双工网关、60ms 毫秒级打断及中文流式语音模型的协同架构。</desc>
-        <defs>
-      <style>#voice-arch-light-root { font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif; color: #2d3142; }
-      #voice-arch-light-root .diagram-container { width: 100%; overflow-x: auto; }
-      @media print {
-#voice-arch-light-root .diagram-container { overflow-x: visible; }
-}</style>
-          <marker id="voice-arch-light-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
-          <marker id="voice-arch-light-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bf4520"/></marker>
-          <marker id="voice-arch-light-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2e5aa8"/></marker>
-        </defs>
-        <rect width="100%" height="100%" fill="#f5f5f5"/>
-        
-        <text x="32" y="28" fill="#5a6580" font-size="8.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" letter-spacing="0.16em">VOICE-AGENT-RTP-GATEWAY · ARCHITECTURE</text>
-        <text x="32" y="52" fill="#2d3142" font-size="19" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">企业级全双工实时语音智能体网关（Java Spring Boot + Python Pipecat）</text>
-        <rect x="792" y="24" width="216" height="28" rx="4" fill="#bf4520" stroke="#bf4520" stroke-width="1" fill-opacity="0.08"/>
-        <text x="900" y="42" fill="#bf4520" font-size="9.5" font-weight="600" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">BARGE-IN ≤ 60MS · TTFB ~78MS</text>
-        <line x1="32" y1="68" x2="1008" y2="68" stroke="#2d3142" stroke-width="1" stroke-opacity="0.12"/>
-        <rect x="32" y="88" width="256" height="360" rx="8" fill="#2d3142" stroke="#2d3142" stroke-width="1" fill-opacity="0.02" stroke-opacity="0.12"/>
-        <rect x="48" y="82" width="164" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="130" y="92" fill="#5a6580" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">01 · PSTN &amp; RTP EDGE</text>
-        <rect x="336" y="88" width="368" height="360" rx="8" fill="#2d3142" stroke="#2d3142" stroke-width="1" fill-opacity="0.02" stroke-opacity="0.12"/>
-        <rect x="352" y="82" width="236" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="470" y="92" fill="#5a6580" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">02 · FULL-DUPLEX VOICE GATEWAY</text>
-        <rect x="752" y="88" width="256" height="360" rx="8" fill="#2d3142" stroke="#2d3142" stroke-width="1" fill-opacity="0.02" stroke-opacity="0.12"/>
-        <rect x="768" y="82" width="188" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="862" y="92" fill="#5a6580" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">03 · STREAMING AI STACK</text>
-        <line x1="160" y1="204" x2="160" y2="248" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#voice-arch-light-arrow)"/>
-        <rect x="168" y="218" width="64" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="200" y="228" fill="#5a6580" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">RTP 8KHZ</text>
-        <line x1="264" y1="164" x2="368" y2="164" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#voice-arch-light-arrow)"/>
-        <rect x="288" y="142" width="56" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="316" y="152" fill="#5a6580" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WS PCMU</text>
-        <line x1="264" y1="280" x2="368" y2="280" stroke="#bf4520" stroke-width="1.5" marker-end="url(#voice-arch-light-arrow-accent)"/>
-        <rect x="268" y="258" width="96" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="316" y="268" fill="#bf4520" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">60MS BARGE-IN</text>
-        <line x1="368" y1="304" x2="264" y2="304" stroke="#bf4520" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#voice-arch-light-arrow-accent)"/>
-        <rect x="278" y="312" width="76" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="316" y="322" fill="#bf4520" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CLEARAUDIO</text>
-        <line x1="264" y1="388" x2="368" y2="388" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#voice-arch-light-arrow-link)"/>
-        <rect x="274" y="366" width="84" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="316" y="376" fill="#5a6580" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WEBRTC / WS</text>
-        <line x1="520" y1="204" x2="520" y2="248" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#voice-arch-light-arrow)"/>
-        <rect x="528" y="218" width="72" height="14" rx="2" fill="#f5f5f5"/>
-        <text x="564" y="228" fill="#5a6580" font-size="8" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">16KHZ PCM</text>
-        <line x1="520" y1="328" x2="520" y2="348" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#voice-arch-light-arrow)"/>
-        <path d="M 672,172 H 716 Q 724,172 724,180 V 188 Q 724,196 732,196 H 776" fill="none" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#voice-arch-light-arrow-link)"/>
-        <path d="M 776,220 H 744 Q 736,220 736,228 V 360 Q 736,368 728,368 H 672" fill="none" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#voice-arch-light-arrow)"/>
-        <path d="M 672,396 H 704 Q 712,396 712,388 V 364 Q 712,356 720,356 H 776" fill="none" stroke="#bf4520" stroke-width="1.5" marker-end="url(#voice-arch-light-arrow-accent)"/>
-        <path d="M 776,320 H 708 Q 700,320 700,312 V 156 Q 700,148 692,148 H 672" fill="none" stroke="#2e5aa8" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#voice-arch-light-arrow-link)"/>
-        <rect x="56" y="124" width="208" height="80" rx="6" fill="#f5f5f5"/>
-        <rect x="56" y="124" width="208" height="80" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1" stroke-opacity="0.28"/>
-        <rect x="64" y="132" width="56" height="14" rx="2" fill="none" stroke="#2d3142" stroke-width="0.8" stroke-opacity="0.38"/>
-        <text x="92" y="142" fill="#5a6580" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SIP/PBX</text>
-        <text x="160" y="170" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">FreeSWITCH 媒体集群</text>
-        <text x="160" y="187" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">8kHz G.711 · mod_audio_stream</text>
-        <rect x="56" y="248" width="208" height="80" rx="6" fill="#f5f5f5"/>
-        <rect x="56" y="248" width="208" height="80" rx="6" fill="#bf4520" stroke="#bf4520" stroke-width="1.5" fill-opacity="0.08"/>
-        <rect x="64" y="256" width="56" height="14" rx="2" fill="none" stroke="#bf4520" stroke-width="0.8"/>
-        <text x="92" y="266" fill="#bf4520" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">JAVA 17</text>
-        <text x="160" y="294" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">RTP 边缘打断网桥</text>
-        <text x="160" y="311" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">RFC3550 · 环形缓冲 · RMS VAD</text>
-        <rect x="56" y="348" width="208" height="80" rx="6" fill="#f5f5f5"/>
-        <rect x="56" y="348" width="208" height="80" rx="6" fill="#2e5aa8" stroke="#2e5aa8" stroke-width="1.2" fill-opacity="0.06"/>
-        <rect x="64" y="356" width="52" height="14" rx="2" fill="none" stroke="#2e5aa8" stroke-width="0.8"/>
-        <text x="90" y="366" fill="#2e5aa8" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">WEB UI</text>
-        <text x="160" y="394" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">实时语音监控大屏</text>
-        <text x="160" y="411" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">Spring Boot WS · 波形与延迟面板</text>
-        <rect x="368" y="124" width="304" height="80" rx="6" fill="#f5f5f5"/>
-        <rect x="368" y="124" width="304" height="80" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1" stroke-opacity="0.28"/>
-        <rect x="376" y="132" width="44" height="14" rx="2" fill="none" stroke="#2d3142" stroke-width="0.8" stroke-opacity="0.38"/>
-        <text x="398" y="142" fill="#5a6580" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CODEC</text>
-        <text x="520" y="170" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">双向协议序列化与重采样</text>
-        <text x="520" y="187" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">SOXR VHQ 8kHz ⇄ 16kHz 无损滤波</text>
-        <rect x="368" y="248" width="304" height="80" rx="6" fill="#f5f5f5"/>
-        <rect x="368" y="248" width="304" height="80" rx="6" fill="#bf4520" stroke="#bf4520" stroke-width="1.5" fill-opacity="0.08"/>
-        <rect x="376" y="256" width="36" height="14" rx="2" fill="none" stroke="#bf4520" stroke-width="0.8"/>
-        <text x="394" y="266" fill="#bf4520" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
-        <text x="520" y="294" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">全双工打断与状态机内核</text>
-        <text x="520" y="311" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">Silero VAD · 0.2ms 极速中断信号</text>
-        <rect x="368" y="348" width="304" height="80" rx="6" fill="#f5f5f5"/>
-        <rect x="368" y="348" width="304" height="80" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1" stroke-opacity="0.28"/>
-        <rect x="376" y="356" width="56" height="14" rx="2" fill="none" stroke="#2d3142" stroke-width="0.8" stroke-opacity="0.38"/>
-        <text x="404" y="366" fill="#5a6580" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CONTEXT</text>
-        <text x="520" y="394" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">多轮话轮聚合器</text>
-        <text x="520" y="411" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">Spring Boot 3 / Pipecat 双引擎</text>
-        <rect x="776" y="156" width="208" height="88" rx="6" fill="#f5f5f5"/>
-        <rect x="776" y="156" width="208" height="88" rx="6" fill="#2e5aa8" stroke="#2e5aa8" stroke-width="1.2" fill-opacity="0.06"/>
-        <rect x="784" y="164" width="36" height="14" rx="2" fill="none" stroke="#2e5aa8" stroke-width="0.8"/>
-        <text x="802" y="174" fill="#2e5aa8" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">STT</text>
-        <text x="880" y="206" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">中文流式语音识别</text>
-        <text x="880" y="223" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">FunASR SenseVoice · Mock</text>
-        <rect x="776" y="296" width="208" height="104" rx="6" fill="#f5f5f5"/>
-        <rect x="776" y="296" width="208" height="104" rx="6" fill="#2e5aa8" stroke="#2e5aa8" stroke-width="1.2" fill-opacity="0.06"/>
-        <rect x="784" y="304" width="56" height="14" rx="2" fill="none" stroke="#2e5aa8" stroke-width="0.8"/>
-        <text x="812" y="314" fill="#2e5aa8" font-size="7.5" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">LLM+TTS</text>
-        <text x="880" y="354" fill="#2d3142" font-size="12.5" font-weight="600" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif" text-anchor="middle">低延迟生成与流式合成</text>
-        <text x="880" y="371" fill="#4f5d75" font-size="9.5" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" text-anchor="middle">DeepSeek(NoThink) · MiniMax</text>
-        <line x1="32" y1="468" x2="1008" y2="468" stroke="#2d3142" stroke-width="1" stroke-opacity="0.12"/>
-        <text x="32" y="488" fill="#5a6580" font-size="8" font-weight="500" font-family="'Geist Mono', 'SFMono-Regular', Menlo, Monaco, ui-monospace, monospace" letter-spacing="0.14em">LEGEND</text>
-        <rect x="96" y="478" width="12" height="12" rx="2" fill="#bf4520" stroke="#bf4520" stroke-width="1.4" fill-opacity="0.08"/>
-        <text x="114" y="488" fill="#4f5d75" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">核心打断控制节点 (Focal)</text>
-        <rect x="288" y="478" width="12" height="12" rx="2" fill="#2e5aa8" stroke="#2e5aa8" stroke-width="1.2" fill-opacity="0.06"/>
-        <text x="306" y="488" fill="#4f5d75" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">外部模型与 Web 交互端</text>
-        <rect x="451" y="478" width="12" height="12" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1" stroke-opacity="0.28"/>
-        <text x="469" y="488" fill="#4f5d75" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">内部编解码与状态组件</text>
-        <line x1="586" y1="484" x2="604" y2="484" stroke="#bf4520" stroke-width="1.6"/>
-        <text x="610" y="488" fill="#4f5d75" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">毫秒级打断关键路径</text>
-        <line x1="717" y1="484" x2="735" y2="484" stroke="#4f5d75" stroke-width="1.2" stroke-dasharray="4,3"/>
-        <text x="741" y="488" fill="#4f5d75" font-size="9.5" font-family="'Geist', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif">异步回传音频 / 文本流</text>
-      </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1260" width="100%" height="100%" style="background:#FFFFFF;font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M1,1.5 L8.5,5 L1,8.5 Z" fill="#111827"/></marker>
+  <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#00C6FF"/>
+    <stop offset="55%" stop-color="#2563EB"/>
+    <stop offset="100%" stop-color="#6D28D9"/>
+  </linearGradient>
+  <filter id="softShadow" x="-4%" y="-4%" width="108%" height="108%">
+    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.06"/>
+  </filter>
+</defs>
+<rect width="1800" height="1260" fill="#FFFFFF"/>
+<rect x="26" y="24" width="234" height="286" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<g transform="translate(66,62)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#2563EB" opacity="0.14"/><line x1="-8" y1="-6" x2="8" y2="-4" stroke="#2563EB" stroke-width="2.2"/><line x1="-8" y1="-6" x2="-2" y2="9" stroke="#2563EB" stroke-width="2.2"/><line x1="8" y1="-4" x2="-2" y2="9" stroke="#2563EB" stroke-width="2.2"/><circle cx="-8" cy="-6" r="4.2" fill="#2563EB"/><circle cx="8" cy="-4" r="4.2" fill="#2563EB"/><circle cx="-2" cy="9" r="4.2" fill="#2563EB"/></g>
+<text x="96" y="60" font-size="16" font-weight="700" fill="#111827">MCP 2.0</text>
+<text x="96" y="78" font-size="11.5" font-weight="500" fill="#4B5563">JSON-RPC Stdio/SSE</text>
+<g transform="translate(66,126)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0D9488" opacity="0.14"/><polygon points="0,-13 12,-6 0,1 -12,-6" fill="#0D9488"/><polygon points="-12,-6 0,1 0,13 -12,6" fill="#0D9488" opacity="0.8"/><polygon points="12,-6 0,1 0,13 12,6" fill="#0D9488" opacity="0.6"/></g>
+<text x="96" y="124" font-size="16" font-weight="700" fill="#111827">A2A / A2UI</text>
+<text x="96" y="142" font-size="11.5" font-weight="500" fill="#4B5563">Multi-Agent Bus</text>
+<g transform="translate(66,190)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#EA580C" opacity="0.14"/><line x1="-9" y1="-6" x2="-9" y2="6" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="-3" y1="-12" x2="-3" y2="12" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="3" y1="-9" x2="3" y2="9" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="9" y1="-5" x2="9" y2="5" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/></g>
+<text x="96" y="188" font-size="16" font-weight="700" fill="#111827">RTP / SIP</text>
+<text x="96" y="206" font-size="11.5" font-weight="500" fill="#4B5563">RFC 3550 G.711 8k</text>
+<g transform="translate(66,254)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#4F46E5" opacity="0.14"/><polygon points="0,-13 11,-6.5 11,6.5 0,13 -11,6.5 -11,-6.5" fill="none" stroke="#4F46E5" stroke-width="3"/><polygon points="0,-6 5,-3 5,3 0,6 -5,3 -5,-3" fill="#4F46E5"/></g>
+<text x="96" y="252" font-size="16" font-weight="700" fill="#111827">OpenAI API</text>
+<text x="96" y="270" font-size="11.5" font-weight="500" fill="#4B5563">v1/chat &amp; Realtime</text>
+<rect x="26" y="326" width="234" height="138" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<rect x="48" y="346" width="36" height="36" rx="9" fill="#111827"/>
+<path d="M66 352 L69 361 L78 364 L69 367 L66 376 L63 367 L54 364 L63 361 Z" fill="#38BDF8"/>
+<text x="96" y="363" font-size="15.5" font-weight="700" fill="#111827">Codex Studio UI</text>
+<text x="96" y="380" font-size="11.5" fill="#4B5563">Three-Pane IDE &amp; Diff</text>
+<text x="143" y="432" text-anchor="middle" font-size="19" font-weight="700" font-family="Georgia, serif" fill="#111827">Gemini Live UI</text>
+<rect x="26" y="480" width="234" height="756" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<g transform="translate(66,524)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#2563EB" opacity="0.14"/><path d="M-12 2 C-12 -8 2 -11 8 -3 C11 -6 14 -8 15 -4 C15 5 4 11 -6 9 C-10 8 -12 5 -12 2 Z" fill="#2563EB"/><circle cx="-4" cy="-2" r="2" fill="#FFFFFF"/></g>
+<text x="96" y="522" font-size="16.5" font-weight="700" fill="#111827">DeepSeek</text>
+<text x="96" y="540" font-size="11.5" fill="#4B5563">V3 / R1 (Thinking Off)</text>
+<g transform="translate(66,595)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#6D28D9" opacity="0.14"/><polygon points="0,-13 11,-6.5 11,6.5 0,13 -11,6.5 -11,-6.5" fill="none" stroke="#6D28D9" stroke-width="3"/><polygon points="0,-6 5,-3 5,3 0,6 -5,3 -5,-3" fill="#6D28D9"/></g>
+<text x="96" y="593" font-size="16.5" font-weight="700" fill="#111827">Qwen 通义千问</text>
+<text x="96" y="611" font-size="11.5" fill="#4B5563">Qwen3 / Qwen-Max</text>
+<g transform="translate(66,666)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#D97706" opacity="0.14"/><path d="M0 -13 Q2 -2 13 0 Q2 2 0 13 Q-2 2 -13 0 Q-2 -2 0 -13 Z" fill="#D97706"/><circle cx="8" cy="-8" r="2.5" fill="#F59E0B"/></g>
+<text x="96" y="664" font-size="16.5" font-weight="700" fill="#111827">Claude</text>
+<text x="96" y="682" font-size="11.5" fill="#4B5563">Claude 4 / Sonnet</text>
+<g transform="translate(66,737)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0284C7" opacity="0.14"/><path d="M0 -13 Q2 -2 13 0 Q2 2 0 13 Q-2 2 -13 0 Q-2 -2 0 -13 Z" fill="#0284C7"/><circle cx="8" cy="-8" r="2.5" fill="#F59E0B"/></g>
+<text x="96" y="735" font-size="16.5" font-weight="700" fill="#111827">Gemini</text>
+<text x="96" y="753" font-size="11.5" fill="#4B5563">2.5 Pro / Live Audio</text>
+<g transform="translate(66,808)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#10B981" opacity="0.14"/><polygon points="0,-13 11,-6.5 11,6.5 0,13 -11,6.5 -11,-6.5" fill="none" stroke="#10B981" stroke-width="3"/><polygon points="0,-6 5,-3 5,3 0,6 -5,3 -5,-3" fill="#10B981"/></g>
+<text x="96" y="806" font-size="16.5" font-weight="700" fill="#111827">OpenAI</text>
+<text x="96" y="824" font-size="11.5" fill="#4B5563">GPT-4o / Codex</text>
+<g transform="translate(66,879)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#EA580C" opacity="0.14"/><line x1="-9" y1="-6" x2="-9" y2="6" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="-3" y1="-12" x2="-3" y2="12" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="3" y1="-9" x2="3" y2="9" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="9" y1="-5" x2="9" y2="5" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/></g>
+<text x="96" y="877" font-size="16.5" font-weight="700" fill="#111827">SenseVoice</text>
+<text x="96" y="895" font-size="11.5" fill="#4B5563">阿里 FunASR 16kHz</text>
+<g transform="translate(66,950)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#E11D48" opacity="0.14"/><line x1="-9" y1="-6" x2="-9" y2="6" stroke="#E11D48" stroke-width="3.2" stroke-linecap="round"/><line x1="-3" y1="-12" x2="-3" y2="12" stroke="#E11D48" stroke-width="3.2" stroke-linecap="round"/><line x1="3" y1="-9" x2="3" y2="9" stroke="#E11D48" stroke-width="3.2" stroke-linecap="round"/><line x1="9" y1="-5" x2="9" y2="5" stroke="#E11D48" stroke-width="3.2" stroke-linecap="round"/></g>
+<text x="96" y="948" font-size="16.5" font-weight="700" fill="#111827">MiniMax 海螺</text>
+<text x="96" y="966" font-size="11.5" fill="#4B5563">Streaming TTS 24kHz</text>
+<g transform="translate(66,1021)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0891B2" opacity="0.14"/><line x1="-8" y1="-6" x2="8" y2="-4" stroke="#0891B2" stroke-width="2.2"/><line x1="-8" y1="-6" x2="-2" y2="9" stroke="#0891B2" stroke-width="2.2"/><line x1="8" y1="-4" x2="-2" y2="9" stroke="#0891B2" stroke-width="2.2"/><circle cx="-8" cy="-6" r="4.2" fill="#0891B2"/><circle cx="8" cy="-4" r="4.2" fill="#0891B2"/><circle cx="-2" cy="9" r="4.2" fill="#0891B2"/></g>
+<text x="96" y="1019" font-size="16.5" font-weight="700" fill="#111827">GLM 智谱</text>
+<text x="96" y="1037" font-size="11.5" fill="#4B5563">GLM-4.5 / Realtime</text>
+<g transform="translate(66,1092)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#475569" opacity="0.14"/><polygon points="0,-13 12,-6 0,1 -12,-6" fill="#475569"/><polygon points="-12,-6 0,1 0,13 -12,6" fill="#475569" opacity="0.8"/><polygon points="12,-6 0,1 0,13 12,6" fill="#475569" opacity="0.6"/></g>
+<text x="96" y="1090" font-size="16.5" font-weight="700" fill="#111827">Ollama</text>
+<text x="96" y="1108" font-size="11.5" fill="#4B5563">Local GGUF Models</text>
+<g transform="translate(66,1163)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#7C3AED" opacity="0.14"/><polygon points="2,-13 -9,1 0,1 -3,13 10,-2 1,-2" fill="#7C3AED"/></g>
+<text x="96" y="1161" font-size="16.5" font-weight="700" fill="#111827">vLLM / SGLang</text>
+<text x="96" y="1179" font-size="11.5" fill="#4B5563">High-Throughput Engine</text>
+<rect x="296" y="24" width="1478" height="180" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<g transform="translate(352,76)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#EA580C" opacity="0.14"/><line x1="-9" y1="-6" x2="-9" y2="6" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="-3" y1="-12" x2="-3" y2="12" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="3" y1="-9" x2="3" y2="9" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/><line x1="9" y1="-5" x2="9" y2="5" stroke="#EA580C" stroke-width="3.2" stroke-linecap="round"/></g>
+<text x="380" y="74" font-size="18" font-weight="700" fill="#111827">FreeSWITCH</text>
+<text x="380" y="92" font-size="11.5" fill="#4B5563">SIP / ESL / RTP</text>
+<g transform="translate(592,76)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0284C7" opacity="0.14"/><ellipse cx="0" cy="-8" rx="10" ry="4" fill="#0284C7"/><path d="M-10 -8 L-10 7 C-10 10 10 10 10 7 L10 -8" fill="#0284C7" opacity="0.75"/><ellipse cx="0" cy="-1" rx="10" ry="3.2" fill="none" stroke="#FFFFFF" stroke-width="1.5"/></g>
+<text x="620" y="74" font-size="18" font-weight="700" fill="#111827">MySQL</text>
+<text x="620" y="92" font-size="11.5" fill="#4B5563">Relational DB</text>
+<g transform="translate(832,76)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#2563EB" opacity="0.14"/><ellipse cx="0" cy="-8" rx="10" ry="4" fill="#2563EB"/><path d="M-10 -8 L-10 7 C-10 10 10 10 10 7 L10 -8" fill="#2563EB" opacity="0.75"/><ellipse cx="0" cy="-1" rx="10" ry="3.2" fill="none" stroke="#FFFFFF" stroke-width="1.5"/></g>
+<text x="860" y="74" font-size="18" font-weight="700" fill="#111827">PostgreSQL</text>
+<text x="860" y="92" font-size="11.5" fill="#4B5563">pgvector &amp; State</text>
+<g transform="translate(1072,76)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#DC2626" opacity="0.14"/><polygon points="0,-13 12,-6 0,1 -12,-6" fill="#DC2626"/><polygon points="-12,-6 0,1 0,13 -12,6" fill="#DC2626" opacity="0.8"/><polygon points="12,-6 0,1 0,13 12,6" fill="#DC2626" opacity="0.6"/></g>
+<text x="1100" y="74" font-size="18" font-weight="700" fill="#111827">Redis</text>
+<text x="1100" y="92" font-size="11.5" fill="#4B5563">RingBuffer &amp; Cache</text>
+<g transform="translate(1312,76)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0EA5E9" opacity="0.14"/><polygon points="0,-13 12,-6 0,1 -12,-6" fill="#0EA5E9"/><polygon points="-12,-6 0,1 0,13 -12,6" fill="#0EA5E9" opacity="0.8"/><polygon points="12,-6 0,1 0,13 12,6" fill="#0EA5E9" opacity="0.6"/></g>
+<text x="1340" y="74" font-size="18" font-weight="700" fill="#111827">Milvus</text>
+<text x="1340" y="92" font-size="11.5" fill="#4B5563">Dense Vector DB</text>
+<g transform="translate(1552,76)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#E11D48" opacity="0.14"/><polygon points="0,-13 11,-6.5 11,6.5 0,13 -11,6.5 -11,-6.5" fill="none" stroke="#E11D48" stroke-width="3"/><polygon points="0,-6 5,-3 5,3 0,6 -5,3 -5,-3" fill="#E11D48"/></g>
+<text x="1580" y="74" font-size="18" font-weight="700" fill="#111827">Qdrant</text>
+<text x="1580" y="92" font-size="11.5" fill="#4B5563">Hybrid Search</text>
+<g transform="translate(352,150)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#16A34A" opacity="0.14"/><path d="M0 -13 C9 -7 11 4 0 13 C-11 4 -9 -7 0 -13 Z" fill="#16A34A"/><line x1="0" y1="-8" x2="0" y2="10" stroke="#FFFFFF" stroke-width="1.6"/></g>
+<text x="380" y="148" font-size="18" font-weight="700" fill="#111827">MongoDB</text>
+<text x="380" y="166" font-size="11.5" fill="#4B5563">Session Document</text>
+<g transform="translate(592,150)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0891B2" opacity="0.14"/><line x1="-8" y1="-6" x2="8" y2="-4" stroke="#0891B2" stroke-width="2.2"/><line x1="-8" y1="-6" x2="-2" y2="9" stroke="#0891B2" stroke-width="2.2"/><line x1="8" y1="-4" x2="-2" y2="9" stroke="#0891B2" stroke-width="2.2"/><circle cx="-8" cy="-6" r="4.2" fill="#0891B2"/><circle cx="8" cy="-4" r="4.2" fill="#0891B2"/><circle cx="-2" cy="9" r="4.2" fill="#0891B2"/></g>
+<text x="620" y="148" font-size="18" font-weight="700" fill="#111827">Neo4j</text>
+<text x="620" y="166" font-size="11.5" fill="#4B5563">GraphRAG Multi-Hop</text>
+<g transform="translate(832,150)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#D97706" opacity="0.14"/><ellipse cx="0" cy="-8" rx="10" ry="4" fill="#D97706"/><path d="M-10 -8 L-10 7 C-10 10 10 10 10 7 L10 -8" fill="#D97706" opacity="0.75"/><ellipse cx="0" cy="-1" rx="10" ry="3.2" fill="none" stroke="#FFFFFF" stroke-width="1.5"/></g>
+<text x="860" y="148" font-size="18" font-weight="700" fill="#111827">Elasticsearch</text>
+<text x="860" y="166" font-size="11.5" fill="#4B5563">BM25 Lexical Index</text>
+<g transform="translate(1072,150)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#EA580C" opacity="0.14"/><polygon points="2,-13 -9,1 0,1 -3,13 10,-2 1,-2" fill="#EA580C"/></g>
+<text x="1100" y="148" font-size="18" font-weight="700" fill="#111827">RocketMQ</text>
+<text x="1100" y="166" font-size="11.5" fill="#4B5563">Async Event Bus</text>
+<g transform="translate(1312,150)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0284C7" opacity="0.14"/><ellipse cx="0" cy="-8" rx="10" ry="4" fill="#0284C7"/><path d="M-10 -8 L-10 7 C-10 10 10 10 10 7 L10 -8" fill="#0284C7" opacity="0.75"/><ellipse cx="0" cy="-1" rx="10" ry="3.2" fill="none" stroke="#FFFFFF" stroke-width="1.5"/></g>
+<text x="1340" y="148" font-size="18" font-weight="700" fill="#111827">SQLite</text>
+<text x="1340" y="166" font-size="11.5" fill="#4B5563">Local Memory Store</text>
+<g transform="translate(1552,150)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#4F46E5" opacity="0.14"/><line x1="-8" y1="-6" x2="8" y2="-4" stroke="#4F46E5" stroke-width="2.2"/><line x1="-8" y1="-6" x2="-2" y2="9" stroke="#4F46E5" stroke-width="2.2"/><line x1="8" y1="-4" x2="-2" y2="9" stroke="#4F46E5" stroke-width="2.2"/><circle cx="-8" cy="-6" r="4.2" fill="#4F46E5"/><circle cx="8" cy="-4" r="4.2" fill="#4F46E5"/><circle cx="-2" cy="9" r="4.2" fill="#4F46E5"/></g>
+<text x="1580" y="148" font-size="18" font-weight="700" fill="#111827">mem0</text>
+<text x="1580" y="166" font-size="11.5" fill="#4B5563">Long-Term Memory</text>
+<rect x="296" y="222" width="1478" height="186" rx="20" fill="#FDF2F4" stroke="#1E293B" stroke-width="1.8"/>
+<text x="328" y="260" font-size="21" font-weight="700" fill="#111827">Voice-Gateway-Scenes</text>
+<rect x="326" y="278" width="172" height="42" rx="9" fill="#F7B2AD" stroke="#1E293B" stroke-width="1.5"/>
+<text x="412.0" y="304.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">PSTN Call Center</text>
+<rect x="510" y="278" width="172" height="42" rx="9" fill="#F7B2AD" stroke="#1E293B" stroke-width="1.5"/>
+<text x="596.0" y="304.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">VIP Cloud Butler</text>
+<rect x="326" y="332" width="172" height="42" rx="9" fill="#F7B2AD" stroke="#1E293B" stroke-width="1.5"/>
+<text x="412.0" y="358.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">Outbound Copilot</text>
+<rect x="510" y="332" width="172" height="42" rx="9" fill="#F7B2AD" stroke="#1E293B" stroke-width="1.5"/>
+<text x="596.0" y="358.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">WebRTC Live</text>
+<rect x="706" y="236" width="1050" height="158" rx="16" fill="#FFFFFF" stroke="#1E293B" stroke-width="1.5"/>
+<rect x="724" y="249" width="248" height="38" rx="8" fill="#C7CEEA" stroke="#1E293B" stroke-width="1.5"/>
+<text x="848.0" y="272.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">8kHz G.711 &lt;-&gt; 16kHz</text>
+<rect x="724" y="295" width="248" height="38" rx="8" fill="#C7CEEA" stroke="#1E293B" stroke-width="1.5"/>
+<text x="848.0" y="318.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">60ms Edge Barge-in</text>
+<rect x="724" y="341" width="248" height="38" rx="8" fill="#C7CEEA" stroke="#1E293B" stroke-width="1.5"/>
+<text x="848.0" y="364.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Zero-Key Mock Mode</text>
+<text x="1115" y="298" text-anchor="middle" font-size="36" font-weight="800" fill="#111827">WGVoice</text>
+<rect x="1008" y="320" width="22" height="22" rx="6" fill="#10B981"/>
+<circle cx="1019" cy="331" r="5" fill="#FFFFFF"/>
+<text x="1132" y="340" text-anchor="middle" font-size="24" font-weight="700" fill="#111827">LiveGateway</text>
+<circle cx="1298" cy="315" r="48" fill="#EAF4FE" stroke="#1E293B" stroke-width="2"/>
+<rect x="1272" y="295" width="52" height="40" rx="12" fill="url(#brandGrad)" stroke="#1E293B" stroke-width="1.8"/>
+<circle cx="1288" cy="313" r="5" fill="#FFFFFF"/>
+<circle cx="1308" cy="313" r="5" fill="#FFFFFF"/>
+<path d="M1288 325 Q1298 331 1308 325" stroke="#FFFFFF" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+<line x1="1298" y1="295" x2="1298" y2="283" stroke="#1E293B" stroke-width="2.2"/>
+<circle cx="1298" cy="280" r="4.5" fill="#F59E0B"/>
+<rect x="1384" y="249" width="164" height="38" rx="8" fill="#F6B36B" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1466.0" y="272.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">SOXR VHQ Resample</text>
+<rect x="1560" y="249" width="164" height="38" rx="8" fill="#F6B36B" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1642.0" y="272.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">clearAudio 0.16ms</text>
+<rect x="1384" y="295" width="164" height="38" rx="8" fill="#F6B36B" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1466.0" y="318.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Thinking=Disabled</text>
+<rect x="1560" y="295" width="164" height="38" rx="8" fill="#F6B36B" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1642.0" y="318.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">256-Slot RingBuf</text>
+<rect x="1384" y="341" width="340" height="38" rx="8" fill="#F6B36B" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1554.0" y="364.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Browser Mic Live VAD</text>
+<rect x="296" y="426" width="1238" height="672" rx="22" fill="#EAF4FE" stroke="#1E293B" stroke-width="2.0" filter="url(#softShadow)"/>
+<path d="M342 486 L362 444 L378 444 L358 486 Z" fill="#00C6FF"/>
+<path d="M366 486 L386 444 L408 444 L388 486 Z" fill="url(#brandGrad)"/>
+<text x="424" y="481" font-size="34" font-weight="800" fill="#111827">WG Voice Gateway 2.0</text>
+<rect x="888" y="451" width="54" height="32" rx="6" fill="#EA580C"/>
+<text x="915" y="472" text-anchor="middle" font-size="14" font-weight="800" fill="#FFFFFF">Java</text>
+<rect x="952" y="451" width="68" height="32" rx="6" fill="#2563EB"/>
+<text x="986" y="472" text-anchor="middle" font-size="14" font-weight="800" fill="#FFFFFF">Python</text>
+<rect x="1030" y="451" width="38" height="32" rx="6" fill="#0284C7"/>
+<text x="1049" y="472" text-anchor="middle" font-size="14" font-weight="800" fill="#FFFFFF">TS</text>
+<text x="1508" y="474" text-anchor="end" font-size="14" font-weight="600" fill="#4B5563">FreeSWITCH RTP + Java Edge + Pipecat 1.15</text>
+<rect x="320" y="504" width="1190" height="140" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="915" y="532" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">Voice Gateway Control Service (Java Spring Boot 3 &amp; FastAPI)</text>
+<rect x="346" y="546" width="368" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="530.0" y="567.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">FreeSWITCH ESL / WS Bridge</text>
+<rect x="730" y="546" width="368" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="914.0" y="567.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">RFC 3550 UDP RTP Listener</text>
+<rect x="1114" y="546" width="368" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1298.0" y="567.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">256-Frame Outbound RingBuffer</text>
+<rect x="346" y="590" width="368" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="530.0" y="611.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">SOXR VHQ Phase-Continuous</text>
+<rect x="730" y="590" width="368" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="914.0" y="611.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Session Latency Telemetry</text>
+<rect x="1114" y="590" width="368" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1298.0" y="611.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Multi-Trunk Call Routing</text>
+<rect x="320" y="682" width="246" height="202" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="443" y="714" text-anchor="middle" font-size="16.5" font-weight="700" fill="#111827">Audio &amp; Event Bus</text>
+<rect x="340" y="732" width="206" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="443.0" y="753.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">20ms RTP Frame Stream</text>
+<rect x="340" y="778" width="206" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="443.0" y="799.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Edge RMS &amp; Silero VAD</text>
+<rect x="340" y="824" width="206" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="443.0" y="845.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0.16ms clearAudio Bus</text>
+<rect x="592" y="682" width="686" height="202" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="935" y="712" text-anchor="middle" font-size="17" font-weight="700" fill="#111827">Full-Duplex Voice Engine</text>
+<rect x="624" y="730" width="174" height="38" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="711.0" y="754.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">Streaming ASR</text>
+<rect x="624" y="816" width="174" height="38" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="711.0" y="840.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">clearAudio Flush</text>
+<rect x="864" y="774" width="184" height="38" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="956.0" y="798.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">60ms Barge-in Gate</text>
+<rect x="1096" y="774" width="154" height="38" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1173.0" y="798.075" text-anchor="middle" font-size="14.5" font-weight="600" fill="#111827">Streaming TTS</text>
+<line x1="711" y1="816" x2="711" y2="772" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<path d="M798 749 Q935 742 948 771" fill="none" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<path d="M948 812 Q935 838 802 835" fill="none" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<line x1="1096" y1="793" x2="1052" y2="793" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<rect x="1304" y="682" width="206" height="202" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="1407" y="714" text-anchor="middle" font-size="16.5" font-weight="700" fill="#111827">Media Channels</text>
+<rect x="1322" y="732" width="170" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1407.0" y="753.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">FreeSWITCH SIP</text>
+<rect x="1322" y="778" width="170" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1407.0" y="799.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">UDP RTP Socket</text>
+<rect x="1322" y="824" width="170" height="34" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1407.0" y="845.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">WebAudio Mic</text>
+<rect x="320" y="916" width="366" height="156" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="503" y="946" text-anchor="middle" font-size="16.5" font-weight="700" fill="#111827">Speech &amp; LLM Stack</text>
+<rect x="340" y="964" width="168" height="86" rx="10" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="424.0" y="1002.95" text-anchor="middle" font-size="13.5" font-weight="600" fill="#111827">DeepSeek / Qwen</text>
+<text x="424.0" y="1019.825" text-anchor="middle" font-size="13.5" font-weight="600" fill="#111827">(Thinking Off)</text>
+<rect x="522" y="964" width="144" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="594.0" y="986.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">SenseVoice STT</text>
+<rect x="522" y="1014" width="144" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="594.0" y="1036.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">MiniMax TTS</text>
+<rect x="722" y="916" width="332" height="156" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="888" y="946" text-anchor="middle" font-size="16.5" font-weight="700" fill="#111827">Latency &amp; Turn Control</text>
+<rect x="748" y="964" width="280" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="888.0" y="986.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Sub-100ms First Audio Packet</text>
+<rect x="748" y="1014" width="280" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="888.0" y="1036.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Instant Interruption Frame</text>
+<rect x="1090" y="916" width="420" height="156" rx="18" fill="#9AD0FF" stroke="#1E293B" stroke-width="1.8"/>
+<text x="1300" y="946" text-anchor="middle" font-size="16.5" font-weight="700" fill="#111827">Audio Signal Processing</text>
+<rect x="1112" y="964" width="180" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1202.0" y="986.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">G.711 u-law Codec</text>
+<rect x="1308" y="964" width="180" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1398.0" y="986.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">8k &lt;-&gt; 16k Resample</text>
+<rect x="1112" y="1012" width="180" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1202.0" y="1034.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Jitter Smoothing</text>
+<rect x="1308" y="1012" width="180" height="36" rx="6" fill="#F1F3F5" stroke="#1E293B" stroke-width="1.5"/>
+<text x="1398.0" y="1034.9" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Echo &amp; Noise Gate</text>
+<line x1="443" y1="648" x2="443" y2="678" stroke="#111827" stroke-width="1.8" marker-start="url(#arr)" marker-end="url(#arr)"/>
+<line x1="1407" y1="644" x2="1407" y2="678" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<line x1="570" y1="783" x2="588" y2="783" stroke="#111827" stroke-width="1.8" marker-start="url(#arr)" marker-end="url(#arr)"/>
+<line x1="1282" y1="783" x2="1300" y2="783" stroke="#111827" stroke-width="1.8" marker-start="url(#arr)" marker-end="url(#arr)"/>
+<line x1="555" y1="916" x2="594" y2="886" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<line x1="888" y1="916" x2="888" y2="888" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<line x1="1260" y1="916" x2="1220" y2="886" stroke="#111827" stroke-width="1.8" marker-end="url(#arr)"/>
+<rect x="1554" y="426" width="220" height="672" rx="18" fill="#EAF4FE" stroke="#1E293B" stroke-width="1.8"/>
+<g transform="translate(1598,516)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#7C3AED" opacity="0.14"/><line x1="-9" y1="-6" x2="-9" y2="6" stroke="#7C3AED" stroke-width="3.2" stroke-linecap="round"/><line x1="-3" y1="-12" x2="-3" y2="12" stroke="#7C3AED" stroke-width="3.2" stroke-linecap="round"/><line x1="3" y1="-9" x2="3" y2="9" stroke="#7C3AED" stroke-width="3.2" stroke-linecap="round"/><line x1="9" y1="-5" x2="9" y2="5" stroke="#7C3AED" stroke-width="3.2" stroke-linecap="round"/></g>
+<text x="1628" y="514" font-size="18" font-weight="800" fill="#111827">Pipecat 1.15</text>
+<text x="1628" y="534" font-size="12" font-weight="500" fill="#4B5563">FrameProcessor Pipe</text>
+<g transform="translate(1598,666)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#EA580C" opacity="0.14"/><path d="M0 -13 Q2 -2 13 0 Q2 2 0 13 Q-2 2 -13 0 Q-2 -2 0 -13 Z" fill="#EA580C"/><circle cx="8" cy="-8" r="2.5" fill="#F59E0B"/></g>
+<text x="1628" y="664" font-size="18" font-weight="800" fill="#111827">FunASR</text>
+<text x="1628" y="684" font-size="12" font-weight="500" fill="#4B5563">SenseVoiceSmall</text>
+<g transform="translate(1598,816)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0284C7" opacity="0.14"/><polygon points="2,-13 -9,1 0,1 -3,13 10,-2 1,-2" fill="#0284C7"/></g>
+<text x="1628" y="814" font-size="18" font-weight="800" fill="#111827">SOXR VHQ</text>
+<text x="1628" y="834" font-size="12" font-weight="500" fill="#4B5563">Lossless Resampler</text>
+<g transform="translate(1598,966)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#16A34A" opacity="0.14"/><path d="M0 -13 L11 -8 L11 1 C11 8 0 13 0 13 C0 13 -11 8 -11 1 L-11 -8 Z" fill="#16A34A"/><path d="M-4 0 L-1 3 L5 -3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></g>
+<text x="1628" y="964" font-size="18" font-weight="800" fill="#111827">UDP Bench</text>
+<text x="1628" y="984" font-size="12" font-weight="500" fill="#4B5563">RFC 3550 Loopback</text>
+<rect x="296" y="1118" width="366" height="118" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<text x="336" y="1164" font-size="22" font-weight="800" fill="#111827">Spring Boot 3</text>
+<text x="518" y="1164" font-size="22" font-weight="800" fill="#2563EB">Higress</text>
+<text x="336" y="1210" font-size="21" font-weight="800" fill="#0D9488">FastAPI</text>
+<text x="488" y="1210" font-size="20" font-weight="800" fill="#EA580C">Netty / RTP</text>
+<rect x="682" y="1118" width="852" height="118" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<circle cx="724" cy="1152" r="7" fill="#EA580C"/>
+<text x="740" y="1158" font-size="19" font-weight="700" fill="#111827">ARMS / SLS</text>
+<circle cx="949" cy="1152" r="7" fill="#2563EB"/>
+<text x="965" y="1158" font-size="19" font-weight="700" fill="#111827">OpenTelemetry</text>
+<circle cx="1219" cy="1152" r="7" fill="#E11D48"/>
+<text x="1235" y="1158" font-size="19" font-weight="700" fill="#111827">Langfuse</text>
+<circle cx="724" cy="1202" r="7" fill="#D97706"/>
+<text x="740" y="1208" font-size="19" font-weight="700" fill="#111827">Prometheus</text>
+<circle cx="949" cy="1202" r="7" fill="#0F172A"/>
+<text x="965" y="1208" font-size="19" font-weight="700" fill="#111827">LangSmith</text>
+<circle cx="1219" cy="1202" r="7" fill="#0284C7"/>
+<text x="1235" y="1208" font-size="19" font-weight="700" fill="#111827">Phoenix Eval</text>
+<rect x="1554" y="1118" width="220" height="118" rx="18" fill="#FFFFFF" stroke="#2E6BE6" stroke-width="1.8"/>
+<g transform="translate(1598,1154)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#0284C7" opacity="0.14"/><polygon points="0,-13 12,-6 0,1 -12,-6" fill="#0284C7"/><polygon points="-12,-6 0,1 0,13 -12,6" fill="#0284C7" opacity="0.8"/><polygon points="12,-6 0,1 0,13 12,6" fill="#0284C7" opacity="0.6"/></g>
+<text x="1628" y="1160" font-size="18" font-weight="700" fill="#111827">Docker</text>
+<g transform="translate(1598,1202)"><rect x="-18" y="-18" width="36" height="36" rx="10" fill="#4F46E5" opacity="0.14"/><path d="M0 -13 Q2 -2 13 0 Q2 2 0 13 Q-2 2 -13 0 Q-2 -2 0 -13 Z" fill="#4F46E5"/><circle cx="8" cy="-8" r="2.5" fill="#F59E0B"/></g>
+<text x="1628" y="1208" font-size="18" font-weight="700" fill="#111827">K8s / E2B</text>
+<path d="M260 150 L278 150 L278 574 L320 574" stroke="#1E293B" stroke-width="1.8" stroke-dasharray="6,5" fill="none"/>
+<path d="M278 100 L296 100" stroke="#1E293B" stroke-width="1.8" stroke-dasharray="6,5" fill="none"/>
+<path d="M260 395 L278 395" stroke="#1E293B" stroke-width="1.8" stroke-dasharray="6,5" fill="none"/>
+<path d="M260 760 L280 760 L280 994 L320 994" stroke="#1E293B" stroke-width="1.8" stroke-dasharray="6,5" fill="none"/>
+<path d="M1510 783 L1538 783 L1538 1176 L1554 1176" stroke="#1E293B" stroke-width="1.8" stroke-dasharray="6,5" fill="none"/>
+<path d="M1300 1072 L1300 1106 L1108 1106 L1108 1118" stroke="#1E293B" stroke-width="1.8" stroke-dasharray="6,5" fill="none"/>
+</svg>
